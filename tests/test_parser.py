@@ -1,4 +1,5 @@
-from ExpressionEvaluator import Parser
+from ExpressionEvaluator import Parser, ParserSyntaxError
+import pytest
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 getcontext().rounding = ROUND_HALF_UP
 
@@ -77,3 +78,7 @@ def test_with_text():
 def test_with_text_2():
     assert Parser(
         name='Juan').parse('Hola $(name)$ 2+2=$(2+2)$') == 'Hola Juan 2+2=4'
+
+def test_syntax_error():
+    with pytest.raises(ParserSyntaxError):
+        Parser().parse('$(3+2)')

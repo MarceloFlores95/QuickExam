@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from .tokenizer import tokens, lexer
+from .exceptions import ParserSyntaxError, ParserVariableNotFound
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 getcontext().rounding = ROUND_HALF_UP
 
@@ -7,7 +8,6 @@ getcontext().rounding = ROUND_HALF_UP
 class Parser():
     def __init__(self, **kwargs):
         self.table = kwargs
-        self.lexer = lexer.clone()
         self.tokens = tokens
         self.parser = yacc.yacc(module=self)
 
@@ -39,7 +39,7 @@ class Parser():
         p[0] = p[1]
 
     def p_term_exponent(self, p):
-        'term : term EXP factor'
+        'factor : factor EXP factor'
         p[0] = p[1]**p[3]
 
     def p_term_times(self, p):
@@ -71,8 +71,13 @@ class Parser():
 
     def p_factor_var(self, p):
         'factor : VAR'
+        if p[1] not in self.table:
+            raise ParserVariableNotFound
         p[0] = self.table[p[1]]
 
     def p_factor_expression(self, p):
         'factor : LPAREN expression RPAREN'
         p[0] = p[2]
+
+    def p_error(self, p):
+        raise ParserSyntaxError("Syntax Error")
