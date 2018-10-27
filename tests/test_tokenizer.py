@@ -12,9 +12,13 @@ def lexer_to_list():
     return [token_to_tuple(token) for token in lexer]
 
 
-def test_one_operator():
+def test_one_operator_1():
     lexer.input('$(+)$')
     assert lexer_to_list() == [('START', '$('), ('PLUS', '+'), ('END', ')$')]
+
+def test_one_operator_2():
+    lexer.input('$(-)$')
+    assert lexer_to_list() == [('START', '$('), ('MINUS', '-'), ('END', ')$')]
 
 
 def test_simple_operation():
