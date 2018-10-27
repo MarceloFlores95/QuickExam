@@ -73,5 +73,5 @@ class Parser():
         p[0] = self.table[p[1]]
 
     def p_factor_expression(self, p):
-        'factor : RPAREN expression LPAREN'
+        'factor : LPAREN expression RPAREN'
         p[0] = p[2]
