@@ -29,4 +29,4 @@ def t_DECIMAL(t):
 
 t_ignore = ' \t\n\r'
 
-lexer = lex.lexer()
+lexer = lex.lex()
