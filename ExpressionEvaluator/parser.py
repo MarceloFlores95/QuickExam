@@ -2,16 +2,15 @@ import ply.yacc as yacc
 from .tokenizer import tokens, lexer
 from decimal import Decimal
 
-
 class Parser():
     def __init__(self, **kwargs):
         self.table = kwargs
-        self.lexer = lexer
+        self.lexer = lexer.clone()
         self.tokens = tokens
         self.parser = yacc.yacc(module=self)
 
     def parse(self, s: str) -> str:
-        return self.parser.parse(s)
+        return self.parser.parse(s, lexer=lexer.clone())
 
 
     def p_text_expression(self, p):
@@ -33,7 +32,7 @@ class Parser():
 
     def p_expression_minus(self, p):
         'expression : expression MINUS term'
-        p[0] = p[1] + p[3]
+        p[0] = p[1] - p[3]
 
     def p_expresion_term(self, p):
         'expression : term'
@@ -45,7 +44,13 @@ class Parser():
 
     def p_term_divide(self, p):
         'term : term DIVIDE factor'
-        p[0] = p[1] / p[3]
+        a = p[1]
+        b = p[3]
+        if isinstance(a, int) and isinstance(b, int):
+            result = a // b
+        else:
+            result = a / b
+        p[0] = result
 
     def p_term_exponent(self, p):
         'term : term EXP factor'
