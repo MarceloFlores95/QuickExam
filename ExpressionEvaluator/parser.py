@@ -3,6 +3,7 @@ from .tokenizer import tokens, lexer
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 getcontext().rounding = ROUND_HALF_UP
 
+
 class Parser():
     def __init__(self, **kwargs):
         self.table = kwargs
@@ -13,12 +14,10 @@ class Parser():
     def parse(self, s: str) -> str:
         return self.parser.parse(s, lexer=lexer.clone())
 
-
     def p_text_expression(self, p):
         'text : text START expression END text'
         p[0] = (p[1] if p[1] else '') + str(p[3]) + (p[5] if p[5] else '')
 
- 
     def p_text_text(self, p):
         'text : TEXT'
         p[0] = p[1]
@@ -39,6 +38,10 @@ class Parser():
         'expression : term'
         p[0] = p[1]
 
+    def p_term_exponent(self, p):
+        'term : term EXP factor'
+        p[0] = p[1]**p[3]
+
     def p_term_times(self, p):
         'term : term TIMES factor'
         p[0] = p[1] * p[3]
@@ -47,15 +50,12 @@ class Parser():
         'term : term DIVIDE factor'
         a = p[1]
         b = p[3]
-        if isinstance(a, int) and isinstance(b, int):
+        remainder = a % b
+        if isinstance(a, int) and isinstance(b, int) and remainder == 0:
             result = a // b
         else:
-            result = a / b
+            result = Decimal(a) / Decimal(b)
         p[0] = result
-
-    def p_term_exponent(self, p):
-        'term : term EXP factor'
-        p[0] = p[1]**p[3]
 
     def p_term_factor(self, p):
         'term : factor'

@@ -1,4 +1,6 @@
 from ExpressionEvaluator import Parser
+from decimal import Decimal, getcontext, ROUND_HALF_UP
+getcontext().rounding = ROUND_HALF_UP
 
 
 def test_factor():
@@ -44,9 +46,28 @@ def test_ambiguity_3():
 def test_ambiguity_4():
     assert Parser().parse('$(2+2^2)$') == '6'
 
+def test_ambiguity_5():
+    assert Parser().parse('$(4^5/3)$') == '341.3'
+
+
+def test_ambiguity_6():
+    assert Parser().parse('$((1/3)*4^5)$') == '341.3'
+
 
 def test_variables():
     assert Parser(a=1, b=5).parse('$(a+b)$') == '6'
+
+
+def test_decimal_1():
+    assert Parser().parse('$(2+2.5)$') == '4.5'
+
+
+def test_decimal_2():
+    assert Parser().parse('$(2.5+2)$') == '4.5'
+
+
+def test_decimal_3():
+    assert Parser().parse('$(3.5/2)$') == '1.75'
 
 
 def test_with_text():
