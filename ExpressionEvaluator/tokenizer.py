@@ -16,16 +16,17 @@ t_LPAREN = r'\)'
 t_VAR = r'[a-zA-Z][a-zA-Z_0-9]*'
 
 
+def t_DECIMAL(t):
+    r'[0-9]+\.[0-9]+'
+    t.value = Decimal(t.value)
+    return t
+
 
 def t_INT(t):
     r'[0-9]+'
     t.value = int(t.value)
     return t
 
-
-def t_DECIMAL(t):
-    r'[0-9]+.[0-9]+'
-    t.value = Decimal(t.value)
 
 t_ignore = ' \t\n\r'
 
