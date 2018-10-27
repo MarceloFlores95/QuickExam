@@ -29,8 +29,8 @@ t_exp_MINUS = r'-'
 t_exp_DIVIDE = r'/'
 t_exp_TIMES = r'\*'
 t_exp_EXP = r'\^'
-t_exp_RPAREN = r'\('
-t_exp_LPAREN = r'\)'
+t_exp_RPAREN = r'\)'
+t_exp_LPAREN = r'\('
 t_exp_VAR = r'[a-zA-Z][a-zA-Z_0-9]*'
 
 
