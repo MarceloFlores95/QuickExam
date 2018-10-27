@@ -1,6 +1,7 @@
 import ply.yacc as yacc
 from .tokenizer import tokens, lexer
-from decimal import Decimal
+from decimal import Decimal, getcontext, ROUND_HALF_UP
+getcontext().rounding = ROUND_HALF_UP
 
 class Parser():
     def __init__(self, **kwargs):
