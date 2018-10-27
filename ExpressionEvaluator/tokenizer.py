@@ -3,31 +3,49 @@ from decimal import Decimal, getcontext
 
 getcontext().prec = 4
 
+states = (('exp', 'exclusive'), )
+
 tokens = ('PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'RPAREN', 'LPAREN', 'VAR', 'INT',
-          'DECIMAL', 'EXP')
-
-t_PLUS = r'\+'
-t_MINUS = r'-'
-t_DIVIDE = r'/'
-t_TIMES = r'\*'
-t_EXP = r'\^'
-t_RPAREN = r'\('
-t_LPAREN = r'\)'
-t_VAR = r'[a-zA-Z][a-zA-Z_0-9]*'
+          'DECIMAL', 'EXP', 'START', 'END', 'TEXT')
 
 
-def t_DECIMAL(t):
+def t_START(t):
+    r'\$\('
+    t.lexer.begin('exp')
+    return t
+
+
+t_TEXT = r'[^$]+'
+
+
+def t_exp_END(t):
+    r'\)\$'
+    t.lexer.begin('INITIAL')
+    return t
+
+
+t_exp_PLUS = r'\+'
+t_exp_MINUS = r'-'
+t_exp_DIVIDE = r'/'
+t_exp_TIMES = r'\*'
+t_exp_EXP = r'\^'
+t_exp_RPAREN = r'\('
+t_exp_LPAREN = r'\)'
+t_exp_VAR = r'[a-zA-Z][a-zA-Z_0-9]*'
+
+
+def t_exp_DECIMAL(t):
     r'[0-9]+\.[0-9]+'
     t.value = Decimal(t.value)
     return t
 
 
-def t_INT(t):
+def t_exp_INT(t):
     r'[0-9]+'
     t.value = int(t.value)
     return t
 
 
-t_ignore = ' \t\n\r'
+t_exp_ignore = ' \t\n\r'
 
 lexer = lex.lex()

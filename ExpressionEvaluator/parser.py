@@ -1,6 +1,5 @@
 import ply.yacc as yacc
 from .tokenizer import tokens, lexer
-from typing import Union
 from decimal import Decimal
 
 
@@ -11,8 +10,22 @@ class Parser():
         self.tokens = tokens
         self.parser = yacc.yacc(module=self)
 
-    def parse(self, s: str) -> Union[int,Decimal]:
+    def parse(self, s: str) -> str:
         return self.parser.parse(s)
+
+
+    def p_text_expression(self, p):
+        'text : text START expression END text'
+        p[0] = (p[1] if p[1] else '') + str(p[3]) + (p[5] if p[5] else '')
+
+ 
+    def p_text_text(self, p):
+        'text : TEXT'
+        p[0] = p[1]
+
+    def p_text_empty(self, p):
+        'text :'
+        pass
 
     def p_expression_plus(self, p):
         'expression : expression PLUS term'
