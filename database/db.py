@@ -28,6 +28,14 @@ class QuestionOpen(Base):
     topic_name = Column(Integer, ForeignKey('Topic.name'), nullable=False)
     topic = relationship(Topic)
 
+class QuestionTF(Base):
+    __tablename__ = 'QuestionTF'
+    id = Column(Integer, primary_key=True)
+    text = Column(String(10000), nullable=False)
+    expression = Column(String(1000), nullable=False)
+    topic_name = Column(Integer, ForeignKey('Topic.name'), nullable=False)
+    topic = relationship(Topic)
+
 # Create an engine that stores date in the local directory's
 # QuickExam.db file
 engine = create_engine('sqlite:///../QuickExam.db')
