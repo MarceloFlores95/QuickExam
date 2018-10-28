@@ -36,6 +36,23 @@ class QuestionTF(Base):
     topic_name = Column(Integer, ForeignKey('Topic.name'), nullable=False)
     topic = relationship(Topic)
 
+class QuestionMulti(Base):
+    __tablename__ = 'QuestionMulti'
+    id = Column(Integer, primary_key=True)
+    correct_answer = Column(String(1000), nullable=False)
+    text = Column(String(10000), nullable=False)
+    topic_name = Column(Integer, ForeignKey('Topic.name'), nullable=False)
+    topic = relationship(Topic)
+
+class DummyAnswers(Base):
+    __tablename__ = 'DummyAnswers'
+    id = Column(Integer, primary_key=True)
+    answer = Column(String(1000), nullable=False)
+    question_id = Column(Integer, ForeignKey('QuestionMulti.id'), nullable=False)
+    question = relationship(QuestionMulti)
+
+
+
 # Create an engine that stores date in the local directory's
 # QuickExam.db file
 engine = create_engine('sqlite:///../QuickExam.db')
