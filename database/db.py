@@ -12,20 +12,20 @@ class Subject(Base):
     __tablename__ = 'Subject'
     # Define columns for the Subject table
     # subject_id = Column(Integer, primary_key=True)    # name is now the PK
-    subject_name = Column(String(100), nullable=False, primary_key=True)
+    name = Column(String(100), nullable=False, primary_key=True)
 
 class Topic(Base):
     __tablename__ = 'Topic'
     # topic_id = Column(Integer, primary_key=True)  # name and subject is now the PK
-    topic_name = Column(String(100), nullable=False, primary_key=True)
-    subject_name = Column(Integer, ForeignKey('Subject.subject_name'), nullable=False, primary_key=True)
+    name = Column(String(100), nullable=False, primary_key=True)
+    subject_name = Column(Integer, ForeignKey('Subject.name'), nullable=False, primary_key=True)
     subject = relationship(Subject)
 
 class QuestionOpen(Base):
     __tablename__ = 'QuestionOpen'
-    qo_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     text = Column(String(10000), nullable=False)
-    topic_name = Column(Integer, ForeignKey('Topic.topic_name'), nullable=False)
+    topic_name = Column(Integer, ForeignKey('Topic.name'), nullable=False)
     topic = relationship(Topic)
 
 # Create an engine that stores date in the local directory's
