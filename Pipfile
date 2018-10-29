@@ -9,6 +9,7 @@ ply = "*"
 
 [dev-packages]
 pytest = "*"
+pipenv = "*"
 
 [requires]
 python_version = "3.7"
