@@ -75,6 +75,13 @@ class QuestionMulti(Base):
     topic = relationship(Topic)
 
 
+class VariableQuestionMulti(Base):
+    __tablename__ = 'VariableQuestionMulti'
+    question_id = Column(Integer, ForeignKey('QuestionMulti.id'), nullable=False, primary_key=True)
+    variable_id = Column(Integer, ForeignKey('Variable.id'), nullable=False, primary_key=True)
+    variable = relationship(Variable, backref='questions_multi')
+    question = relationship(QuestionMulti, backref='variables_multi')
+
 class DummyAnswers(Base):
     __tablename__ = 'DummyAnswers'
     id = Column(Integer, primary_key=True)
@@ -107,3 +114,4 @@ class TestQuestions(Base):
     __table_args__ = (ForeignKeyConstraint([topic_name, subject_name],
                                            [Topic.name, Topic.name]),
                       ForeignKeyConstraint([test_id], [Test.id]))
+
