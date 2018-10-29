@@ -41,6 +41,14 @@ class QuestionOpen(Base):
     topic = relationship(Topic)
 
 
+class VariableQuestionOpen(Base):
+    __tablename__ = 'VariableQuestionOpen'
+    question_id = Column(Integer, ForeignKey('QuestionOpen.id'), primary_key=True)
+    variable_id = Column(Integer, ForeignKey('Variable.id'), primary_key=True)
+    question = relationship(QuestionOpen, backref='questions_open')
+    variable = relationship(Variable, backref='variables')
+
+
 class QuestionTF(Base):
     __tablename__ = 'QuestionTF'
     id = Column(Integer, primary_key=True)
@@ -48,6 +56,14 @@ class QuestionTF(Base):
     expression = Column(String(1000), nullable=False)
     topic_name = Column(Integer, ForeignKey('Topic.name'), nullable=False)
     topic = relationship(Topic)
+
+
+class VariableQuestionTF(Base):
+    __tablename__ = 'VariableQuestionTF'
+    question_id = Column(Integer, ForeignKey('QuestionTF.id'), primary_key=True)
+    variable_id = Column(Integer, ForeignKey('Variable.id'), primary_key=True)
+    question = relationship(QuestionTF, backref='questions_tf')
+    variable = relationship(Variable, backref='variables')
 
 
 class QuestionMulti(Base):
