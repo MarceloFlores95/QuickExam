@@ -1,7 +1,7 @@
 import pytest
 from evaluator import lexer
-from decimal import Decimal, getcontext
-getcontext().prec = 4
+from decimal import Decimal, getcontext, ROUND_HALF_UP
+getcontext().rounding = ROUND_HALF_UP
 
 
 def token_to_tuple(token):
