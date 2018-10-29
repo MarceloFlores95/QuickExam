@@ -80,7 +80,7 @@ class VariableQuestionMulti(Base):
     question_id = Column(Integer, ForeignKey('QuestionMulti.id'), nullable=False, primary_key=True)
     variable_id = Column(Integer, ForeignKey('Variable.id'), nullable=False, primary_key=True)
     variable = relationship(Variable, backref='questions_multi')
-    question = relationship(QuestionMulti, backref='variables_multi')
+    question = relationship(QuestionMulti, backref='variables')
 
 class DummyAnswers(Base):
     __tablename__ = 'DummyAnswers'
