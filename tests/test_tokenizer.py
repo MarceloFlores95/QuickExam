@@ -1,5 +1,5 @@
 import pytest
-from ExpressionEvaluator import lexer
+from evaluator import lexer
 from decimal import Decimal, getcontext
 getcontext().prec = 4
 

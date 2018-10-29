@@ -1,4 +1,4 @@
-from ExpressionEvaluator import Parser, ParserSyntaxError
+from evaluator import Parser, ParserSyntaxError
 import pytest
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 getcontext().rounding = ROUND_HALF_UP
