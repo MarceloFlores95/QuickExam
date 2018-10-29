@@ -22,7 +22,7 @@ class Topic(Base):
     name = Column(String(100), nullable=False, primary_key=True)
     subject_name = Column(
         Integer, ForeignKey('Subject.name'), nullable=False, primary_key=True)
-    subject = relationship(Subject)
+    subject = relationship(Subject, backref='topics')
 
 
 class Variable(Base):
@@ -88,7 +88,7 @@ class DummyAnswers(Base):
     answer = Column(String(1000), nullable=False)
     question_id = Column(
         Integer, ForeignKey('QuestionMulti.id'), nullable=False)
-    question = relationship(QuestionMulti)
+    question = relationship(QuestionMulti, backref='dummy_answers')
 
 
 class Test(Base):
@@ -108,7 +108,7 @@ class TestQuestions(Base):
     topic_name = Column(String(100), primary_key=True)
     subject_name = Column(String(100), primary_key=True)
     count = Column(Integer, nullable=False)
-    test = relationship(Test)
+    test = relationship(Test, backref='test_questions')
     topic = relationship(Topic)
 
     __table_args__ = (ForeignKeyConstraint([topic_name, subject_name],
