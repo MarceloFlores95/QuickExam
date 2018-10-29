@@ -112,3 +112,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+QuickExam.db
+ExpressionEvaluator/parser.out
+ExpressionEvaluator/parsetab.py
+.idea/
