@@ -12,21 +12,45 @@ class Subject(Base):
     __tablename__ = 'Subject'
     # Define columns for the Subject table
     # subject_id = Column(Integer, primary_key=True)    # name is now the PK
-    subject_name = Column(String(100), nullable=False, primary_key=True)
+    name = Column(String(100), nullable=False, primary_key=True)
 
 class Topic(Base):
     __tablename__ = 'Topic'
     # topic_id = Column(Integer, primary_key=True)  # name and subject is now the PK
-    topic_name = Column(String(100), nullable=False, primary_key=True)
-    subject_name = Column(Integer, ForeignKey('Subject.subject_name'), nullable=False, primary_key=True)
+    name = Column(String(100), nullable=False, primary_key=True)
+    subject_name = Column(Integer, ForeignKey('Subject.name'), nullable=False, primary_key=True)
     subject = relationship(Subject)
 
 class QuestionOpen(Base):
     __tablename__ = 'QuestionOpen'
-    qo_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     text = Column(String(10000), nullable=False)
-    topic_name = Column(Integer, ForeignKey('Topic.topic_name'), nullable=False)
+    topic_name = Column(Integer, ForeignKey('Topic.name'), nullable=False)
     topic = relationship(Topic)
+
+
+class QuestionTF(Base):
+    __tablename__ = 'QuestionTF'
+    id = Column(Integer, primary_key=True)
+    text = Column(String(10000), nullable=False)
+    expression = Column(String(1000), nullable=False)
+    topic_name = Column(Integer, ForeignKey('Topic.name'), nullable=False)
+    topic = relationship(Topic)
+
+class QuestionMulti(Base):
+    __tablename__ = 'QuestionMulti'
+    id = Column(Integer, primary_key=True)
+    correct_answer = Column(String(1000), nullable=False)
+    text = Column(String(10000), nullable=False)
+    topic_name = Column(Integer, ForeignKey('Topic.name'), nullable=False)
+    topic = relationship(Topic)
+
+class DummyAnswers(Base):
+    __tablename__ = 'DummyAnswers'
+    id = Column(Integer, primary_key=True)
+    answer = Column(String(1000), nullable=False)
+    question_id = Column(Integer, ForeignKey('QuestionMulti.id'), nullable=False)
+    question = relationship(QuestionMulti)
 
 class Test(Base):
     __tablename__ = 'Test'
