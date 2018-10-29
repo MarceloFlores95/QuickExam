@@ -9,13 +9,13 @@ class Parser():
     def __init__(self, **kwargs):
         self.table = kwargs
         self.tokens = tokens
-        self.parser = yacc.yacc(module=self)
+        self.parser = yacc.yacc(module=self, debug=False)
 
     def parse(self, s: str) -> str:
         return self.parser.parse(s, lexer=lexer.clone())
 
     def p_text_expression(self, p):
-        'text : text START expression END text'
+        'text : text START expression RPAREN text'
         p[0] = (p[1] if p[1] else '') + str(p[3]) + (p[5] if p[5] else '')
 
     def p_text_text(self, p):
