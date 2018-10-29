@@ -115,3 +115,8 @@ class TestQuestions(Base):
                                            [Topic.name, Topic.name]),
                       ForeignKeyConstraint([test_id], [Test.id]))
 
+
+Engine = create_engine('sqlite:///../QuickExam.db')
+
+Base.metadata.create_all(Engine)
+Base.metadata.bind = Engine
