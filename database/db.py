@@ -25,6 +25,14 @@ class Topic(Base):
     subject = relationship(Subject)
 
 
+class Variable(Base):
+    __tablename__ = 'Variable'
+    id = Column(Integer, primary_key=True)
+    values = Column(String(2000), nullable=False)
+    symbol = Column(String(50), nullable=False)
+    type = Column(String(10), nullable=False)
+
+
 class QuestionOpen(Base):
     __tablename__ = 'QuestionOpen'
     id = Column(Integer, primary_key=True)
