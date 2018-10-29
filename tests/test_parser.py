@@ -47,12 +47,17 @@ def test_ambiguity_3():
 def test_ambiguity_4():
     assert Parser().parse('$(2+2^2)') == '6'
 
+
 def test_ambiguity_5():
     assert Parser().parse('$(4^5/3)') == '341.3'
 
 
 def test_ambiguity_6():
     assert Parser().parse('$((1/3)*4^5)') == '341.3'
+
+
+def test_ambiguity_7():
+    assert Parser().parse('$(2^3^2)') == '512'
 
 
 def test_variables():
@@ -78,6 +83,7 @@ def test_with_text():
 def test_with_text_2():
     assert Parser(
         name='Juan').parse('Hola $(name) 2+2=$(2+2)') == 'Hola Juan 2+2=4'
+
 
 def test_syntax_error():
     with pytest.raises(ParserSyntaxError):
