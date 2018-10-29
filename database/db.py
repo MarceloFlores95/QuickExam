@@ -70,6 +70,6 @@ class TestQuestions(Base):
     topic = relationship(Topic)
 
     __table_args__ = (ForeignKeyConstraint([topic_name, subject_name],
-                                           [Topic.topic_name, Topic.subject_name]),
+                                           [Topic.name, Topic.name]),
                       ForeignKeyConstraint([test_id],
                                            [Test.id]))
