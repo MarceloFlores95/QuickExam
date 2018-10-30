@@ -53,5 +53,5 @@ def t_exp_INT(t):
 
 t_exp_ignore = ' \t\n\r'
 
-lexer = lex.lex()
-lexer.paren_counter = 0
+question_lexer = lex.lex()
+question_lexer.paren_counter = 0
