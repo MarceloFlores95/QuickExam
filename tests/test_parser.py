@@ -99,6 +99,14 @@ def test_negative_number_3():
     assert QuestionParser(a=2, b=3).parse('$(a+(-b))') == '-1'
 
 
+def test_negative_number_4():
+    assert parser.parse('$(-(2+3))') == '-5'
+
+
+def test_negative_number_5():
+    assert parser.parse('$(5+(-(2+3)))') == '0'
+
+
 def test_redundant_paren_1():
     assert parser.parse('$((2+3))') == '5'
 
