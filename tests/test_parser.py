@@ -5,6 +5,7 @@ getcontext().rounding = ROUND_HALF_UP
 
 parser = QuestionParser()
 
+
 def test_factor():
     assert parser.parse('3') == '3'
 
@@ -96,6 +97,18 @@ def test_negative_number_2():
 
 def test_negative_number_3():
     assert QuestionParser(a=2, b=3).parse('$(a+(-b))') == '-1'
+
+
+def test_redundant_paren_1():
+    assert parser.parse('$((2+3))') == '5'
+
+
+def test_redundant_paren_1():
+    assert parser.parse('$((2)+(3))') == '5'
+
+
+def test_redundant_paren_3():
+    assert parser.parse('$((10 / 5) * 2)') == '4'
 
 
 def test_variable_not_found():
