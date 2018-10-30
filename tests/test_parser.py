@@ -1,4 +1,4 @@
-from evaluator import QuestionParser, ParserSyntaxError
+from evaluator import QuestionParser, ParserSyntaxError, ParserVariableNotFound
 import pytest
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 getcontext().rounding = ROUND_HALF_UP
@@ -83,6 +83,10 @@ def test_with_text():
 def test_with_text_2():
     assert QuestionParser(
         name='Juan').parse('Hola $(name) 2+2=$(2+2)') == 'Hola Juan 2+2=4'
+
+def test_variable_not_found():
+    with pytest.raises(ParserVariableNotFound):
+        QuestionParser().parse('$(a+b)')
 
 
 def test_syntax_error():
