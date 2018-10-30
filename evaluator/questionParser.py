@@ -61,6 +61,10 @@ class QuestionParser():
         'term : factor'
         p[0] = p[1]
 
+    def p_factor_negative(self, p):
+        'factor : MINUS factor'
+        p[0] = -p[2]
+
     def p_factor_int(self, p):
         'factor : INT'
         p[0] = p[1]
