@@ -84,6 +84,19 @@ def test_with_text_2():
     assert QuestionParser(
         name='Juan').parse('Hola $(name) 2+2=$(2+2)') == 'Hola Juan 2+2=4'
 
+
+def test_negative_number_1():
+    assert QuestionParser().parse('$(-1)') == '-1'
+
+
+def test_negative_number_2():
+    assert QuestionParser().parse('$(2+(-3))') == '-1'
+
+
+def test_negative_number_3():
+    assert QuestionParser(a=2,b=3).parse('$(a+(-b))') == '-1'
+
+
 def test_variable_not_found():
     with pytest.raises(ParserVariableNotFound):
         QuestionParser().parse('$(a+b)')
