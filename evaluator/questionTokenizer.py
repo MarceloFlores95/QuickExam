@@ -1,5 +1,6 @@
 import ply.lex as lex
 from decimal import Decimal, getcontext
+from .exceptions import LexerInvalidToken
 
 getcontext().prec = 4
 
@@ -14,6 +15,10 @@ def t_START(t):
     t.lexer.paren_counter += 1
     t.lexer.begin('exp')
     return t
+
+
+def t_error(t):
+    raise LexerInvalidToken
 
 
 def t_exp_LPAREN(t):

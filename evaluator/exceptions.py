@@ -8,3 +8,11 @@ class ParserSyntaxError(ParserException):
 
 class ParserVariableNotFound(ParserException):
     pass
+
+
+class LexerException(Exception):
+    pass
+
+
+class LexerInvalidToken(LexerException):
+    pass
