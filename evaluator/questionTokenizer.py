@@ -1,8 +1,8 @@
 import ply.lex as lex
-from decimal import Decimal, getcontext
+from decimal import Decimal, getcontext, ROUND_HALF_UP
 from .exceptions import LexerInvalidToken
 
-getcontext().prec = 4
+getcontext().rounding = ROUND_HALF_UP
 
 states = (('exp', 'exclusive'), )
 
