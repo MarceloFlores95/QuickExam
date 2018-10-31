@@ -1,21 +1,21 @@
 import ply.yacc as yacc
-from .tokenizer import tokens, lexer
+from .questionTokenizer import tokens, question_lexer
 from .exceptions import ParserSyntaxError, ParserVariableNotFound
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 getcontext().rounding = ROUND_HALF_UP
 
 
-class Parser():
+class QuestionParser():
     def __init__(self, **kwargs):
         self.table = kwargs
         self.tokens = tokens
-        self.parser = yacc.yacc(module=self)
+        self.parser = yacc.yacc(module=self, tabmodule='questionParseTab')
 
     def parse(self, s: str) -> str:
-        return self.parser.parse(s, lexer=lexer.clone())
+        return self.parser.parse(s, lexer=question_lexer.clone())
 
     def p_text_expression(self, p):
-        'text : text START expression END text'
+        'text : text START expression RPAREN text'
         p[0] = (p[1] if p[1] else '') + str(p[3]) + (p[5] if p[5] else '')
 
     def p_text_text(self, p):
@@ -60,6 +60,10 @@ class Parser():
     def p_term_factor(self, p):
         'term : factor'
         p[0] = p[1]
+
+    def p_factor_negative(self, p):
+        'factor : MINUS factor'
+        p[0] = -p[2]
 
     def p_factor_int(self, p):
         'factor : INT'

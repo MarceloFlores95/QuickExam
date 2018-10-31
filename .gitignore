@@ -114,6 +114,6 @@ dmypy.json
 .pyre/
 
 QuickExam.db
-ExpressionEvaluator/parser.out
-ExpressionEvaluator/parsetab.py
+evaluator/parser.out
+evaluator/questionParseTab.py
 .idea/
