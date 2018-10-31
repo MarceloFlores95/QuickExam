@@ -3,6 +3,7 @@ from decimal import Decimal, getcontext, ROUND_HALF_UP
 from .exceptions import LexerInvalidToken
 
 getcontext().rounding = ROUND_HALF_UP
+getcontext().prec = 8
 
 states = (('exp', 'exclusive'), )
 

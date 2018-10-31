@@ -51,11 +51,11 @@ def test_ambiguity_4():
 
 
 def test_ambiguity_5():
-    assert parser.parse('$(4^5/3)') == '341.3'
+    assert parser.parse('$(4^5/3)') == '341.33333'
 
 
 def test_ambiguity_6():
-    assert parser.parse('$((1/3)*4^5)') == '341.3'
+    assert parser.parse('$((1/3)*4^5)') == '341.33333'
 
 
 def test_ambiguity_7():
