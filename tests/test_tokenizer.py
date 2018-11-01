@@ -49,7 +49,15 @@ def test_decimal():
                                   ('DECIMAL', Decimal('4.2')), ('RPAREN', ')')]
 
 
-def test_text():
+def test_text_1():
     lex = question_lexer.clone()
     lex.input('Hola')
-    assert lexer_to_list(lex) == [('TEXT', 'Hola')]
+    assert lexer_to_list(lex) == [('CHAR', 'H'), ('CHAR', 'o'), ('CHAR', 'l'),
+                                  ('CHAR', 'a')]
+
+
+def test_text_2():
+    lex = question_lexer.clone()
+    lex.input('$$()')
+    assert lexer_to_list(lex) == [('CHAR', '$'), ('START', '$('),
+                                  ('RPAREN', ')')]
