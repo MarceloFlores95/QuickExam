@@ -9,7 +9,6 @@ ply = "*"
 flask = "*"
 flask-restplus = "*"
 flask-sqlalchemy = "*"
-flask-login = "*"
 flask-migrate = "*"
 flask-cors = "*"
 
