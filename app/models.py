@@ -1,19 +1,23 @@
 from .app import db
 
 
+class User(db.Model):
+    __tablename__ = 'User'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), index=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+
 class Subject(db.Model):
     __tablename__ = 'Subject'
-    # Define columns for the Subject table
-    # subject_id = db.Column(db.Integer, primary_key=True)    # name is now the PK
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, index=True)
     topics = db.relationship('Topic', cascade='all')
 
 
 class Topic(db.Model):
     __tablename__ = 'Topic'
-    # topic_id = db.Column(db.Integer, primary_key=True)  # name and subject is now the PK
-    name = db.Column(db.String(100), nullable=False, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, index=True)
     subject_id = db.Column(db.Integer, db.ForeignKey('Subject.id'), nullable=False)
 
 
