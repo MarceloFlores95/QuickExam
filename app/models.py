@@ -1,11 +1,26 @@
 from .app import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from .app import login
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), index=True, nullable=False)
     password_hash = db.Column(db.String(128))
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
 
 class Subject(db.Model):
     __tablename__ = 'Subject'
@@ -18,7 +33,8 @@ class Topic(db.Model):
     __tablename__ = 'Topic'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, index=True)
-    subject_id = db.Column(db.Integer, db.ForeignKey('Subject.id'), nullable=False)
+    subject_id = db.Column(
+        db.Integer, db.ForeignKey('Subject.id'), nullable=False)
 
 
 class Variable(db.Model):
@@ -29,7 +45,8 @@ class Variable(db.Model):
     type = db.Column(db.String(10), nullable=False)
     question_open_id = db.Column(db.Integer, db.ForeignKey('QuestionOpen.id'))
     question_tf_id = db.Column(db.Integer, db.ForeignKey('QuestionTF.id'))
-    question_multi_id = db.Column(db.Integer, db.ForeignKey('QuestionMulti.id'))
+    question_multi_id = db.Column(db.Integer,
+                                  db.ForeignKey('QuestionMulti.id'))
 
 
 class QuestionOpen(db.Model):
@@ -63,7 +80,8 @@ class DummyAnswers(db.Model):
     __tablename__ = 'DummyAnswers'
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(1000), nullable=False)
-    question_id = db.Column(db.Integer, db.ForeignKey('QuestionMulti.id'), nullable=False)
+    question_id = db.Column(
+        db.Integer, db.ForeignKey('QuestionMulti.id'), nullable=False)
 
 
 class Test(db.Model):
