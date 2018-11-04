@@ -9,7 +9,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///QuickExam.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SWAGGER_UI_JSONEDITOR'] = True
 CORS(app)
-api = Api(app, doc='/api/documentation')
+
+authorizations = {
+    'apikey' : {
+        'type' : 'apiKey',
+        'in' : 'header',
+        'name' : 'X-API-KEY'
+    }
+}
+
+api = Api(app, doc='/api/documentation', authorizations=authorizations)
 db = SQLAlchemy(app)
 
 from .models import *
