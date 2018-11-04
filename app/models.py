@@ -7,6 +7,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
+    subjects = db.relationship('Subject', cascade='all')
+    tests = db.relationship('Test', cascade='all')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -20,6 +22,10 @@ class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
     topics = db.relationship('Topic', cascade='all')
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+
+    def get_parameters(self):
+        return {"id":self.id, "name":self.name, "user_id":self.user_id}
 
 
 class Topic(db.Model):
@@ -35,6 +41,9 @@ class Topic(db.Model):
     questions_tf = db.relationship('QuestionTF', cascade='all')
     questions_multi = db.relationship('QuestionMulti', cascade='all')
     test_questions = db.relationship('TestQuestions', cascade='all')
+
+    def get_parameters(self):
+        return {"id":self.id, "name":self.name, "subject_id":self.subject_id}
 
 
 class Variable(db.Model):
@@ -90,6 +99,7 @@ class Test(db.Model):
     name = db.Column(db.String(100), nullable=False)
     header = db.Column(db.String(10000), nullable=False)
     questions = db.relationship('TestQuestions', cascade='all')
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
 
 
 class TestQuestions(db.Model):
