@@ -25,7 +25,7 @@ class Subject(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
 
     def get_parameters(self):
-        return {"id":self.id, "name":self.name, "user_id":self.user_id}
+        return {"id": self.id, "name": self.name}
 
 
 class Topic(db.Model):
@@ -43,7 +43,7 @@ class Topic(db.Model):
     test_questions = db.relationship('TestQuestions', cascade='all')
 
     def get_parameters(self):
-        return {"id":self.id, "name":self.name, "subject_id":self.subject_id}
+        return {"id": self.id, "name": self.name, "subject_id": self.subject_id}
 
 
 class Variable(db.Model):
@@ -65,6 +65,9 @@ class QuestionOpen(db.Model):
     topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     variables = db.relationship('Variable', cascade='all')
 
+    def get_parameters(self):
+        return {"id": self.id, "text": self.text, "topic_id": self.topic_id}
+
 
 class QuestionTF(db.Model):
     __tablename__ = 'QuestionTF'
@@ -73,6 +76,9 @@ class QuestionTF(db.Model):
     expression = db.Column(db.String(1000), nullable=False)
     topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     variables = db.relationship('Variable', cascade='all')
+
+    def get_parameters(self):
+        return {"id": self.id, "text": self.text, "expression": self.expression, "topic_id": self.topic_id}
 
 
 class QuestionMulti(db.Model):
@@ -84,6 +90,11 @@ class QuestionMulti(db.Model):
     variables = db.relationship('Variable', cascade='all')
     dummy_questions = db.relationship('DummyAnswers', cascade='all')
 
+    def get_parameters(self):
+        dummies = DummyAnswers.query.filter_by(question_id=self.id)
+        return {"id": self.id, "correct_answer": self.correct_answer, "text": self.text, "topic_id": self.topic_id,
+                "dummies": [dummy.get_parameters() for dummy in dummies]}
+
 
 class DummyAnswers(db.Model):
     __tablename__ = 'DummyAnswers'
@@ -91,6 +102,9 @@ class DummyAnswers(db.Model):
     answer = db.Column(db.String(1000), nullable=False)
     question_id = db.Column(
         db.Integer, db.ForeignKey('QuestionMulti.id'), nullable=False)
+
+    def get_parameters(self):
+        return {"id": self.id, "answer": self.answer}
 
 
 class Test(db.Model):
@@ -100,6 +114,11 @@ class Test(db.Model):
     header = db.Column(db.String(10000), nullable=False)
     questions = db.relationship('TestQuestions', cascade='all')
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+
+    def get_parameters(self):
+        questions = TestQuestions.query.filter_by(test_id=self.id)
+        return {"id": self.id, "name": self.name, "header": self.header,
+                "questions": [question.get_parameters() for question in questions]}
 
 
 class TestQuestions(db.Model):
@@ -111,3 +130,6 @@ class TestQuestions(db.Model):
     topic = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     count = db.Column(db.Integer)
     test_id = db.Column(db.Integer, db.ForeignKey('Test.id'), nullable=False)
+
+    def get_parameters(self):
+        return {"id": self.id, "topic": self.topic, "count": self.count}
