@@ -9,14 +9,6 @@ import datetime
 SECRET = 'RuloEsHermoso'
 
 
-def token_check(token):
-    try:
-        data = jwt.decode(token, SECRET)
-    except:
-        return None
-    return data
-
-
 def create_token(user):
     token = jwt.encode(
         {
@@ -25,6 +17,18 @@ def create_token(user):
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
         }, SECRET)
     return token
+
+
+def token_check(func):
+    def wrapper(*args, **kwargs):
+        token = flask.request.args.headers('X-API-KEY')
+        try:
+            data = jwt.decode(token, SECRET)
+        except:
+            return {'message': 'Invalid token'}, 401
+        return func(user_id=data['user_id'], *args, **kwargs)
+
+    return wrapper
 
 
 @api.route('/api/login')
