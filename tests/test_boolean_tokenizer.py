@@ -33,3 +33,7 @@ def test_variable():
 
 def test_not():
     assert string_to_tokens('~b') == [('NOT', '~'), ('VAR', 'b')]
+
+
+def test_string():
+    assert string_to_tokens('"Hola"') == [('STRING', 'Hola')]
