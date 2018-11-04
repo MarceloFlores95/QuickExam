@@ -2,7 +2,7 @@ from flask_restplus import Resource
 from .app import api, db, app
 import flask
 from .models import *
-from .parsers import user_parser
+from .parsers import *
 import jwt
 import datetime
 
@@ -59,6 +59,17 @@ class SubjectView(Resource):
         else:
             return {'message': 'Invalid token'}, 401
 
+    def post(self, token):
+        data = token_check(token)
+        if data:
+            subject_data = subject_parser.parse_args()
+            subject = Subject(name=subject_data['name'])
+            db.session.add(subject)
+            db.session.commit()
+            return {'message': 'Successfully added Subject'}
+        else:
+            return {'message': 'Invalid token'}, 401
+
 
 @api.route('/api/topic/<string:token>')
 class TopicView(Resource):
@@ -69,5 +80,16 @@ class TopicView(Resource):
             subject = Subject.query.filter_by(id=subject_id).first()
             topics = [topic.get_parameters() for topic in subject.topics]
             return topics
+        else:
+            return {'message': 'Invalid token'}, 401
+
+    def post(self, token):
+        data = token_check(token)
+        if data:
+            topic_data = topic_parser.parse_args()
+            topic = Topic(name=topic_data['name'], subject_id=topic_data['subject_id'])
+            db.session.add(topic)
+            db.session.commit()
+            return {'message': 'Successfully added Topic'}
         else:
             return {'message': 'Invalid token'}, 401
