@@ -4,8 +4,8 @@ from .exceptions import LexerInvalidToken
 
 regex_or = r'(?i)\|\|?|or'
 regex_and = r'(?i)&&?|and'
-regex_true = r'(?i)1|si|true'
-regex_false = r'(?i)0|no|false'
+regex_true = r'(?i)si|true'
+regex_false = r'(?i)no|false'
 compiled_or = re.compile(regex_or)
 compiled_and = re.compile(regex_and)
 compiled_true = re.compile(regex_true)
@@ -19,13 +19,13 @@ t_AND = regex_and
 
 
 def t_TRUE(t):
-    r'(?i)1|si|true'
+    r'(?i)si|true'
     t.value = True
     return t
 
 
 def t_FALSE(t):
-    r'(?i)0|no|false'
+    r'(?i)no|false'
     t.value = False
     return t
 
