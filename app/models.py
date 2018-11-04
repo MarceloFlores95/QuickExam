@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class User(db.Model):
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), index=True, nullable=False)
+    username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
 
     def set_password(self, password):
@@ -18,14 +18,14 @@ class User(db.Model):
 class Subject(db.Model):
     __tablename__ = 'Subject'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, index=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
     topics = db.relationship('Topic', cascade='all')
 
 
 class Topic(db.Model):
     __tablename__ = 'Topic'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, index=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
     subject_id = db.Column(
         db.Integer, db.ForeignKey('Subject.id'), nullable=False)
     questions_open = db.relationship('QuestionOpen', cascade='all')
