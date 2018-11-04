@@ -24,8 +24,11 @@ class Subject(db.Model):
 
 class Topic(db.Model):
     __tablename__ = 'Topic'
+    __table_args__ = (
+        db.UniqueConstraint('name', 'subject_id'),
+    )
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=False)
     subject_id = db.Column(
         db.Integer, db.ForeignKey('Subject.id'), nullable=False)
     questions_open = db.relationship('QuestionOpen', cascade='all')
@@ -91,6 +94,9 @@ class Test(db.Model):
 
 class TestQuestions(db.Model):
     __tablename__ = 'TestQuestions'
+    __table_args__ = (
+        db.UniqueConstraint('topic', 'test_id'),
+    )
     id = db.Column(db.Integer, primary_key=True)
     topic = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     count = db.Column(db.Integer)
