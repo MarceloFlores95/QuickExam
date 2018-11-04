@@ -56,6 +56,10 @@ class BooleanParser:
         'boolean : factor EQ factor'
         p[0] = p[1] == p[3]
 
+    def p_boolean_neq(self, p):
+        'boolean : factor NEQ factor'
+        p[0] = p[1] != p[3]
+
     def p_boolean_lte(self, p):
         'boolean : factor LTE factor'
         p[0] = p[1] <= p[3]

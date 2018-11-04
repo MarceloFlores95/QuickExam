@@ -16,7 +16,7 @@ compiled_true = re.compile(regex_true)
 compiled_false = re.compile(regex_false)
 
 tokens = ('OR', 'AND', 'VAR', 'TRUE', 'FALSE', 'NOT', 'LPAREN', 'RPAREN', 'LT',
-          'GT', 'EQ', 'LTE', 'GTE', 'INT', 'DECIMAL', 'MINUS', 'STRING')
+          'GT', 'EQ', 'NEQ', 'LTE', 'GTE', 'INT', 'DECIMAL', 'MINUS', 'STRING')
 
 t_OR = regex_or
 t_NOT = r'~|¬'
@@ -26,6 +26,7 @@ t_GTE = r'>='
 t_LT = r'<'
 t_GT = r'>'
 t_EQ = r'=='
+t_NEQ = r'!='
 t_MINUS = r'-'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'

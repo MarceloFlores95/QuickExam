@@ -28,6 +28,10 @@ def test_comparison_5():
     assert parser.parse('2.15==2.16') == False
 
 
+def test_comparsion_6():
+    assert parser.parse('"Azul"!="Azul"') == False
+
+
 def test_and_1():
     assert parser.parse('true and true') == True
 
