@@ -28,6 +28,10 @@ class Topic(db.Model):
     name = db.Column(db.String(100), nullable=False, index=True)
     subject_id = db.Column(
         db.Integer, db.ForeignKey('Subject.id'), nullable=False)
+    questions_open = db.relationship('QuestionOpen', cascade='all')
+    questions_tf = db.relationship('QuestionTF', cascade='all')
+    questions_multi = db.relationship('QuestionMulti', cascade='all')
+    test_questions = db.relationship('TestQuestions', cascade='all')
 
 
 class Variable(db.Model):
@@ -46,7 +50,7 @@ class QuestionOpen(db.Model):
     __tablename__ = 'QuestionOpen'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(10000), nullable=False)
-    topic = db.relationship('Topic', uselist=False)
+    topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     variables = db.relationship('Variable', cascade='all')
 
 
@@ -55,7 +59,7 @@ class QuestionTF(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(10000), nullable=False)
     expression = db.Column(db.String(1000), nullable=False)
-    topic = db.relationship('Topic', uselist=False)
+    topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     variables = db.relationship('Variable', cascade='all')
 
 
@@ -64,7 +68,7 @@ class QuestionMulti(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     correct_answer = db.Column(db.String(1000), nullable=False)
     text = db.Column(db.String(10000), nullable=False)
-    topic = db.relationship('Topic', uselist=False)
+    topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     variables = db.relationship('Variable', cascade='all')
     dummy_questions = db.relationship('DummyAnswers', cascade='all')
 
@@ -88,6 +92,6 @@ class Test(db.Model):
 class TestQuestions(db.Model):
     __tablename__ = 'TestQuestions'
     id = db.Column(db.Integer, primary_key=True)
-    topic = db.relationship('Topic', uselist=False)
+    topic = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     count = db.Column(db.Integer)
     test_id = db.Column(db.Integer, db.ForeignKey('Test.id'), nullable=False)
