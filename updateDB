@@ -1,0 +1,8 @@
+#!/bin/bash
+cd app
+rm -rf migrations/
+rm QuickExam.db
+flask db init
+flask db migrate
+flask db upgrade
+
