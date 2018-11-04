@@ -17,6 +17,16 @@ def token_check(token):
     return data
 
 
+def create_token(user):
+    token = jwt.encode(
+        {
+            'username': user.username,
+            'user_id': user.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        }, SECRET)
+    return token
+
+
 @api.route('/api/login')
 class Token(Resource):
     def post(self):
@@ -24,12 +34,7 @@ class Token(Resource):
         user = User.query.filter_by(username=user_data['username']).first()
         if user is None or not user.check_password(user_data['password']):
             return {'message': 'Invalid login'}, 401
-        token = jwt.encode(
-            {
-                'username': user.username,
-                'user_id' : user.id,
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
-            }, SECRET)
+        token = create_token(user)
         return {'token': token.decode('UTF-8')}
 
 
@@ -41,12 +46,7 @@ class UserRegister(Resource):
         user.set_password(user_data['password'])
         db.session.add(user)
         db.session.commit()
-        token = jwt.encode(
-            {
-                'username': user.username,
-                'user_id' : user.id,
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
-            }, SECRET)
+        token = create_token(token)
         return {'token': token.decode('UTF-8')}
 
 
@@ -65,7 +65,8 @@ class SubjectView(Resource):
         data = token_check(token)
         if data:
             subject_data = subject_parser.parse_args()
-            subject = Subject(name=subject_data['name'], user_id=data['user_id'])
+            subject = Subject(
+                name=subject_data['name'], user_id=data['user_id'])
             db.session.add(subject)
             db.session.commit()
             return {'message': 'Successfully added Subject'}
@@ -89,7 +90,8 @@ class TopicView(Resource):
         data = token_check(token)
         if data:
             topic_data = topic_parser.parse_args()
-            topic = Topic(name=topic_data['name'], subject_id=topic_data['subject_id'])
+            topic = Topic(
+                name=topic_data['name'], subject_id=topic_data['subject_id'])
             db.session.add(topic)
             db.session.commit()
             return {'message': 'Successfully added Topic'}
