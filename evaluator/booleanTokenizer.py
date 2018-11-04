@@ -11,12 +11,13 @@ compiled_and = re.compile(regex_and)
 compiled_true = re.compile(regex_true)
 compiled_false = re.compile(regex_false)
 
-tokens = ('OR', 'AND', 'VAR', 'TRUE', 'FALSE', 'NOT')
+tokens = ('OR', 'AND', 'VAR', 'TRUE', 'FALSE', 'NOT', 'LPAREN', 'RPAREN')
 
 t_OR = regex_or
 t_NOT = r'~|¬'
 t_AND = regex_and
-
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
 
 def t_TRUE(t):
     r'(?i)si|true'
