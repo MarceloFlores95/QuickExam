@@ -66,7 +66,10 @@ class BooleanParser:
 
     def p_factor_var(self, p):
         'factor: VAR'
-        p[0] = p[1]
+        if p[1] in self.table:
+            p[0] = self.table[p[1]]
+        else:
+            raise ParserVariableNotFound
 
     def p_factor_int(self, p):
         'factor: INT'
@@ -79,3 +82,6 @@ class BooleanParser:
     def p_negative_factor(self, p):
         'factor: MINUS factor'
         p[0] = -p[2]
+
+    def p_error(self, p):
+        raise ParserSyntaxError
