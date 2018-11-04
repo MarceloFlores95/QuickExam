@@ -8,6 +8,14 @@ import datetime
 SECRET = 'RuloEsHermoso'
 
 
+def token_check(token):
+    try:
+        data = jwt.decode(token, SECRET)
+    except:
+        return None
+    return data
+
+
 @api.route('/api/login')
 class Token(Resource):
     def post(self):
