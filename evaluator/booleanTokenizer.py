@@ -3,7 +3,7 @@ import re
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 from .exceptions import LexerInvalidToken
 getcontext().prec = 8
-getcontext().round = ROUND_HALF_UP
+getcontext().rounding = ROUND_HALF_UP
 
 regex_or = r'(?i)\|\|?|or'
 regex_and = r'(?i)&&?|and'
