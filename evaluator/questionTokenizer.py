@@ -8,7 +8,7 @@ getcontext().prec = 8
 states = (('exp', 'exclusive'), )
 
 tokens = ('PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'RPAREN', 'LPAREN', 'VAR', 'INT',
-          'DECIMAL', 'EXP', 'START', 'TEXT')
+          'DECIMAL', 'EXP', 'START', 'CHAR')
 
 
 def t_START(t):
@@ -36,7 +36,7 @@ def t_exp_RPAREN(t):
     return t
 
 
-t_TEXT = r'[^$]+'
+t_CHAR = r'.'
 t_exp_PLUS = r'\+'
 t_exp_MINUS = r'-'
 t_exp_DIVIDE = r'/'

@@ -113,7 +113,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-QuickExam.db
+app/QuickExam.db
+app/migrations/
 evaluator/parser.out
 evaluator/questionParseTab.py
+evaluator/booleanParseTab.py
 .idea/

@@ -5,7 +5,7 @@ from decimal import Decimal, getcontext, ROUND_HALF_UP
 getcontext().rounding = ROUND_HALF_UP
 
 
-class QuestionParser():
+class QuestionParser:
     def __init__(self, **kwargs):
         self.table = kwargs
         self.tokens = tokens
@@ -18,8 +18,12 @@ class QuestionParser():
         'text : text START expression RPAREN text'
         p[0] = (p[1] if p[1] else '') + str(p[3]) + (p[5] if p[5] else '')
 
-    def p_text_text(self, p):
-        'text : TEXT'
+    def p_text_char_text(self, p):
+        'text : CHAR text'
+        p[0] = p[1] + p[2]
+
+    def p_text_char(self, p):
+        'text : CHAR'
         p[0] = p[1]
 
     def p_text_empty(self, p):

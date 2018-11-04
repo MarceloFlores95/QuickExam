@@ -115,6 +115,9 @@ def test_redundant_paren_1():
     assert parser.parse('$((2)+(3))') == '5'
 
 
+def test_text_1():
+    assert parser.parse('$$(1)') == '$1'
+
 def test_redundant_paren_3():
     assert parser.parse('$((10 / 5) * 2)') == '4'
 
