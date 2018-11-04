@@ -26,7 +26,8 @@ class Token(Resource):
             return {'message': 'Invalid login'}, 401
         token = jwt.encode(
             {
-                'user': user.username,
+                'username': user.username,
+                'user_id' : user.id,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
             }, SECRET)
         return {'token': token.decode('UTF-8')}
@@ -42,7 +43,8 @@ class UserRegister(Resource):
         db.session.commit()
         token = jwt.encode(
             {
-                'user': user.username,
+                'username': user.username,
+                'user_id' : user.id,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
             }, SECRET)
         return {'token': token.decode('UTF-8')}
@@ -53,7 +55,7 @@ class SubjectView(Resource):
     def get(self, token):
         data = token_check(token)
         if data:
-            user = User.query.filter_by(username=data['user']).first()
+            user = User.query.filter_by(id=data['user_id']).first()
             subjects = [subject.get_parameters() for subject in user.subjects]
             return subjects
         else:
@@ -63,7 +65,7 @@ class SubjectView(Resource):
         data = token_check(token)
         if data:
             subject_data = subject_parser.parse_args()
-            subject = Subject(name=subject_data['name'])
+            subject = Subject(name=subject_data['name'], user_id=data['user_id'])
             db.session.add(subject)
             db.session.commit()
             return {'message': 'Successfully added Subject'}
@@ -76,7 +78,7 @@ class TopicView(Resource):
     def get(self, token):
         data = token_check(token)
         if data:
-            subject_id = flask.request.args.get('subject')
+            subject_id = flask.request.args.get('subject_id')
             subject = Subject.query.filter_by(id=subject_id).first()
             topics = [topic.get_parameters() for topic in subject.topics]
             return topics
