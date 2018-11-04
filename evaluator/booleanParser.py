@@ -9,6 +9,9 @@ class BooleanParser:
         self.tokens = tokens
         self.parser = yacc.yacc(module=self, tabmodule='booleanParseTab')
 
+    def parse(self, s: str) -> bool:
+        return self.parser(s, lexer=boolean_lexer.clone())
+
     def p_or_expression(self, p):
         'expression: expression OR term'
         p[0] = p[1] or p[3]
