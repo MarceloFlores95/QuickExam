@@ -1,14 +1,15 @@
 import ply.lex as lex
+from ply.lex import TOKEN
 import re
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 from .exceptions import LexerInvalidToken
 getcontext().prec = 8
 getcontext().rounding = ROUND_HALF_UP
 
-regex_or = r'(?i)\|\|?|or'
-regex_and = r'(?i)&&?|and'
-regex_true = r'(?i)si|true'
-regex_false = r'(?i)no|false'
+regex_or = r'\|\|?|[oO][rR]'
+regex_and = r'&&?|[aA][nN][dD]'
+regex_true = r'[sS][iI]|[tT][rR][uU][eE]'
+regex_false = r'[nN][oO]|[fF][aA][lL][sS][eE]'
 compiled_or = re.compile(regex_or)
 compiled_and = re.compile(regex_and)
 compiled_true = re.compile(regex_true)
@@ -42,14 +43,14 @@ def t_INT(t):
     return t
 
 
+@TOKEN(regex_true)
 def t_TRUE(t):
-    r'(?i)si|true'
     t.value = True
     return t
 
 
+@TOKEN(regex_false)
 def t_FALSE(t):
-    r'(?i)no|false'
     t.value = False
     return t
 
