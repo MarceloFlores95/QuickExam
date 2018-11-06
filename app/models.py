@@ -1,7 +1,14 @@
 from .app import db
 from .pdf import PDF
 from typing import Dict, Union
+from decimal import Decimal, getcontext, ROUND_HALF_UP
 from werkzeug.security import generate_password_hash, check_password_hash
+from pylatex import Subsection
+import random
+import re
+
+getcontext().rounding = ROUND_HALF_UP
+getcontext().prec = 8
 
 
 class User(db.Model):
@@ -71,6 +78,19 @@ class Variable(db.Model):
             "question_tf_id": self.question_tf_id,
             "question_multi_id": self.question_multi_id
         }
+
+    @property
+    def value(self) -> Union[int, str]:
+        values = self.values.split(',')
+        value = random.sample(values, 1)
+        if re.match(r'\d+-\d+', value):
+            split_value = list(map(int, value.split('-')))
+            return random.sample(range(split_value[0], split_value[1] + 1), 1)
+        if self.type == 'int':
+            return int(value)
+        if self.type == 'dec':
+            return Decimal(value)
+        return value
 
 
 class QuestionOpen(db.Model):
@@ -159,5 +179,5 @@ class TestQuestions(db.Model):
     count = db.Column(db.Integer)
     test_id = db.Column(db.Integer, db.ForeignKey('Test.id'), nullable=False)
 
-    def get_parameters(self):
+    def get_parameters(self) -> Dict[str, Union[str, int]]:
         return {"id": self.id, "topic_id": self.topic_id, "count": self.count}
