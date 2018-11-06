@@ -1,9 +1,9 @@
 from abc import ABCMeta, abstractmethod
-from pylatex import Document
+from pylatex import Document, Enumerate
 
 
 class PDF(metaclass=ABCMeta):
 
     @abstractmethod
-    def append_to_document(self, doc : Document) -> None:
+    def append_to_document(self, doc : Document, doc_answers : Enumerate) -> None:
         pass
