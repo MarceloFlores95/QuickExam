@@ -5,5 +5,5 @@ from pylatex import Document
 class PDF(metaclass=ABCMeta):
 
     @abstractmethod
-    def append_to_document(doc : Document) -> None:
+    def append_to_document(self, doc : Document) -> None:
         pass
