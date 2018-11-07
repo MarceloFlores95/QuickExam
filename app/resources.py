@@ -6,6 +6,7 @@ from .parsers import *
 import jwt
 import itertools
 import datetime
+import os
 import pylatex
 
 SECRET = 'RuloEsHermoso'
@@ -28,7 +29,8 @@ def token_check(func):
             data = jwt.decode(token, SECRET)
         except:
             return {'message': 'Invalid token'}, 401
-        return func(*args, user_id=data['user_id'], **kwargs)
+        kwargs['user_id'] = data['user_id']
+        return func(*args, **kwargs)
 
     return wrapper
 
@@ -298,20 +300,20 @@ class TestQuestionsAdd(Resource):
         return {'message': 'Successfully added Test Questions'}
 
 
-@app.route('/api/tests')
-@token_check
-def generate_tests(user_id):
-    if 'test_id' not in flask.request.args:
-        return flask.jsonify({'message': 'Invalid ID'})
-    test = Test.query.filter_by(id=flask.request.args.get('test_id')).first()
-
-
-#@api.route('/api/question/multi')
-#class QuestionMultiAdd(Resource):
+@api.route('/api/delete/subject')
+class DeleteSubject(Resource):
+    @api.doc(security='apikey', params={'subject_id': "The id of a subject"})
+    @token_check
+    def post(self, user_id):
+        subject_data = topic_parser.parse_args()
+        subject = Subject.query.filter_by(id=subject_data['subject_id'])
+        db.session.delete(subject)
+        db.session.commit()
+        return {'message': 'Successfully deleted Subject'}
 
 
 @api.route('/api/delete/user')
-class UserDelete(Resource):
+class DeleteUser(Resource):
     @api.doc(security='apikey', params={'username': 'The username'})
     @token_check
     def post(self, user_id):
@@ -322,13 +324,25 @@ class UserDelete(Resource):
         return {'message': 'Successfully deleted User'}
 
 
-@api.route('/api/delete/subject')
-class UserSubject(Resource):
-    @api.doc(security='apikey', params={'subject_id': "The id of a subject"})
+@api.route('/api/generate_tests')
+class TestGenerator(Resource):
+    @api.doc(security='apikey', params={'test_id': 'ID of a test'})
     @token_check
     def post(self, user_id):
-        subject_data = topic_parser.parse_args()
-        subject = Subject.query.filter_by(id=subject_data['subject_id'])
-        db.session.delete(subject)
-        db.session.commit()
-        return {'message': 'Successfully deleted Subject'}
+        if 'test_id' not in flask.request.args:
+            return {'message': 'Invalid test ID'}, 500
+        user = User.query.filter_by(id=user_id).first()
+        test = Test.query.filter_by(
+            id=flask.request.args.get('test_id')).first()
+        doc = test.create_pdf()
+        pdf_name = f'{test.name}-{user.username}-{datetime.datetime.now()}'
+        doc.generate_pdf(
+            os.path.abspath(
+                os.path.join(
+                    os.path.dirname(__file__), '..', 'pdfs', pdf_name)))
+        return flask.send_file(
+            os.path.abspath(
+                os.path.join(
+                    os.path.dirname(__file__), '..', 'pdfs',
+                    pdf_name + '.pdf')),
+            as_attachment=True)

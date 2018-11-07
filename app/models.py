@@ -203,7 +203,7 @@ class Test(db.Model):
             lambda a, b: a + b, map(lambda x: x.get_questions(),
                                     self.questions))
         doc = Document()
-        for i in range(1,self.count+1):
+        for i in range(1, self.count + 1):
             random.shuffle(questions)
             doc.append(self.header)
             doc.append(f'Examen tipo {i}')
@@ -229,9 +229,10 @@ class TestQuestions(db.Model):
         return {"id": self.id, "topic_id": self.topic_id, "count": self.count}
 
     def get_questions(self) -> list:
+        topic = Topic.query.filter_by(id=self.topic_id).first()
         return random.sample(
-            self.topic.questions_open + self.topic.questions_tf +
-            self.topics.questions_multi, self.count)
+            topic.questions_open + topic.questions_tf + topic.questions_multi,
+            self.count)
 
 
 class User(db.Model):
