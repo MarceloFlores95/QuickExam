@@ -6,7 +6,7 @@ from pylatex import Subsection
 import random
 import re
 from evaluator import QuestionParser, BooleanParser
-from pylatex import Document, Enumerate, Section
+from pylatex import Document, Enumerate, Section, NewPage
 import functools
 
 getcontext().rounding = ROUND_HALF_UP
@@ -198,17 +198,23 @@ class Test(db.Model):
             "questions": [question.get_parameters() for question in questions]
         }
 
-    def create_pdfs(self) -> Tuple[Document, Document]:
+    def create_pdf(self) -> Document:
         questions = functools.reduce(
             lambda a, b: a + b, map(lambda x: x.get_questions(),
                                     self.questions))
-        random.shuffle(questions)
         doc = Document()
-        answers = Document()
-        with answers.create(Enumerate()) as enum:
+        for i in range(1,self.count+1):
+            random.shuffle(questions)
+            doc.append(self.header)
+            doc.append(f'Examen tipo {i}')
+            enum = Enumerate()
             for question in questions:
-                question.append_to_pdf(doc, enum)
-        return (doc, answers)
+                question.append_to_document(doc, enum)
+            doc.append(NewPage())
+            doc.append('Guía de respuestas')
+            doc.append(enum)
+            doc.append(NewPage())
+        return doc
 
 
 class TestQuestions(db.Model):
