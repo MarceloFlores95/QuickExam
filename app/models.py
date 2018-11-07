@@ -1,4 +1,6 @@
 from .app import db
+from .pdf import PDF
+from typing import Dict, Union
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -24,15 +26,13 @@ class Subject(db.Model):
     topics = db.relationship('Topic', cascade='all')
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
 
-    def get_parameters(self):
+    def get_parameters(self) -> Dict[str, Union[str, int]]:
         return {"id": self.id, "name": self.name}
 
 
 class Topic(db.Model):
     __tablename__ = 'Topic'
-    __table_args__ = (
-        db.UniqueConstraint('name', 'subject_id'),
-    )
+    __table_args__ = (db.UniqueConstraint('name', 'subject_id'), )
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     subject_id = db.Column(
@@ -42,8 +42,12 @@ class Topic(db.Model):
     questions_multi = db.relationship('QuestionMulti', cascade='all')
     test_questions = db.relationship('TestQuestions', cascade='all')
 
-    def get_parameters(self):
-        return {"id": self.id, "name": self.name, "subject_id": self.subject_id}
+    def get_parameters(self) -> Dict[str, Union[str, int]]:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "subject_id": self.subject_id
+        }
 
 
 class Variable(db.Model):
@@ -58,9 +62,15 @@ class Variable(db.Model):
                                   db.ForeignKey('QuestionMulti.id'))
 
     def get_parameters(self):
-        return {"id": self.id, "values": self.values, "symbol": self.symbol, "type": self.type,
-                "question_open_id": self.question_open_id, "question_tf_id": self.question_tf_id,
-                "question_multi_id": self.question_multi_id}
+        return {
+            "id": self.id,
+            "values": self.values,
+            "symbol": self.symbol,
+            "type": self.type,
+            "question_open_id": self.question_open_id,
+            "question_tf_id": self.question_tf_id,
+            "question_multi_id": self.question_multi_id
+        }
 
 
 class QuestionOpen(db.Model):
@@ -70,7 +80,7 @@ class QuestionOpen(db.Model):
     topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     variables = db.relationship('Variable', cascade='all')
 
-    def get_parameters(self):
+    def get_parameters(self) -> Dict[str, Union[str, int]]:
         return {"id": self.id, "text": self.text, "topic_id": self.topic_id}
 
 
@@ -82,8 +92,13 @@ class QuestionTF(db.Model):
     topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     variables = db.relationship('Variable', cascade='all')
 
-    def get_parameters(self):
-        return {"id": self.id, "text": self.text, "expression": self.expression, "topic_id": self.topic_id}
+    def get_parameters(self) -> Dict[str, Union[str, int]]:
+        return {
+            "id": self.id,
+            "text": self.text,
+            "expression": self.expression,
+            "topic_id": self.topic_id
+        }
 
 
 class QuestionMulti(db.Model):
@@ -95,10 +110,15 @@ class QuestionMulti(db.Model):
     variables = db.relationship('Variable', cascade='all')
     dummy_questions = db.relationship('DummyAnswers', cascade='all')
 
-    def get_parameters(self):
+    def get_parameters(self) -> Dict[str, Union[str, int]]:
         dummies = DummyAnswers.query.filter_by(question_id=self.id)
-        return {"id": self.id, "correct_answer": self.correct_answer, "text": self.text, "topic_id": self.topic_id,
-                "dummies": [dummy.get_parameters() for dummy in dummies]}
+        return {
+            "id": self.id,
+            "correct_answer": self.correct_answer,
+            "text": self.text,
+            "topic_id": self.topic_id,
+            "dummies": [dummy.get_parameters() for dummy in dummies]
+        }
 
 
 class DummyAnswers(db.Model):
@@ -108,7 +128,7 @@ class DummyAnswers(db.Model):
     question_id = db.Column(
         db.Integer, db.ForeignKey('QuestionMulti.id'), nullable=False)
 
-    def get_parameters(self):
+    def get_parameters(self) -> Dict[str, Union[str, int]]:
         return {"id": self.id, "answer": self.answer}
 
 
@@ -121,17 +141,19 @@ class Test(db.Model):
     questions = db.relationship('TestQuestions', cascade='all')
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
 
-    def get_parameters(self):
+    def get_parameters(self) -> Dict[str, Union[str, int]]:
         questions = TestQuestions.query.filter_by(test_id=self.id)
-        return {"id": self.id, "name": self.name, "header": self.header,
-                "questions": [question.get_parameters() for question in questions]}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "header": self.header,
+            "questions": [question.get_parameters() for question in questions]
+        }
 
 
 class TestQuestions(db.Model):
     __tablename__ = 'TestQuestions'
-    __table_args__ = (
-        db.UniqueConstraint('topic_id', 'test_id'),
-    )
+    __table_args__ = (db.UniqueConstraint('topic_id', 'test_id'), )
     id = db.Column(db.Integer, primary_key=True)
     topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     count = db.Column(db.Integer)
