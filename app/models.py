@@ -6,6 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from pylatex import Subsection
 import random
 import re
+from evaluator import QuestionParser, BooleanParser
+from pylatex import Document, Enumerate, Section
 
 getcontext().rounding = ROUND_HALF_UP
 getcontext().prec = 8
@@ -93,7 +95,7 @@ class Variable(db.Model):
         return value
 
 
-class QuestionOpen(db.Model):
+class QuestionOpen(db.Model, PDF):
     __tablename__ = 'QuestionOpen'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(10000), nullable=False)
@@ -103,8 +105,17 @@ class QuestionOpen(db.Model):
     def get_parameters(self) -> Dict[str, Union[str, int]]:
         return {"id": self.id, "text": self.text, "topic_id": self.topic_id}
 
+    def append_to_document(self, doc : Document, doc_answers : Enumerate) -> None:
+        variable_dict = {}
+        for variable in self.variables:
+            variable_dict[variable.symbol] = variable.value
+        parsed_text = QuestionParser(**variable_dict).parse(self.text)
+        with doc.create(Section(parsed_text)):
+            doc.append('Respuesta: ')
+        doc_answers.add_item('Respuesta de pregunta abierta')
 
-class QuestionTF(db.Model):
+
+class QuestionTF(db.Model, PDF):
     __tablename__ = 'QuestionTF'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(10000), nullable=False)
@@ -120,8 +131,18 @@ class QuestionTF(db.Model):
             "topic_id": self.topic_id
         }
 
+    def append_to_document(self, doc : Document, doc_answers : Enumerate) -> None:
+        variable_dict = {}
+        for variable in self.variables:
+            variable_dict[variable.symbol] = variable.value
+        parsed_text = QuestionParser(**variable_dict).parse(self.text)
+        with doc.create(Section(parsed_text)):
+            doc.append('Respuesta: ')
+        expr = QuestionParser(**variable_dict).parse(self.expression)
+        doc_answers.add_item('VERDADERO' if expr else 'FALSO')
 
-class QuestionMulti(db.Model):
+
+class QuestionMulti(db.Model, PDF):
     __tablename__ = 'QuestionMulti'
     id = db.Column(db.Integer, primary_key=True)
     correct_answer = db.Column(db.String(1000), nullable=False)
@@ -139,6 +160,22 @@ class QuestionMulti(db.Model):
             "topic_id": self.topic_id,
             "dummies": [dummy.get_parameters() for dummy in dummies]
         }
+
+    def append_to_document(self, doc : Document, doc_answers : Enumerate):
+        variable_dict = {}
+        for variable in self.variables:
+            variable_dict[variable.symbol] = variable.value
+        question_parser = QuestionParser(**variable_dict)
+        parsed_text = question_parser.parse(self.text)
+        correct_answer = question_parser.parse(self.correct_answer)
+        answers = list(map(question_parser.parse, map(lambda x : x.answer, self.dummy_questions)))
+        correct_pos = random.randint(0, len(answers))
+        answers.insert(correct_pos, correct_answer)
+        with doc.create(Section(parsed_text)):
+            with doc.create(Enumerate(enumeration_symbol=r'\alph*) ', options={'start' : 1})) as enum:
+                for answer in answers:
+                    enum.add_item(answer)
+        doc_answers.add_item(char(ord('a') + correct_pos))
 
 
 class DummyAnswers(db.Model):
