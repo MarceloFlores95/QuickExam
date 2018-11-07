@@ -6,6 +6,7 @@ from .parsers import *
 import jwt
 import itertools
 import datetime
+import os
 import pylatex
 
 SECRET = 'RuloEsHermoso'
@@ -28,7 +29,8 @@ def token_check(func):
             data = jwt.decode(token, SECRET)
         except:
             return {'message': 'Invalid token'}, 401
-        return func(*args, user_id=data['user_id'], **kwargs)
+        kwargs['user_id'] = data['user_id']
+        return func(*args, **kwargs)
 
     return wrapper
 
@@ -487,6 +489,30 @@ class UserDelete(Resource):
         db.session.commit()
         return {'message': 'Successfully deleted User'}
 
+
+
+@api.route('/api/generate_tests')
+class TestGenerator(Resource):
+    @api.doc(security='apikey', params={'test_id': 'ID of a test'})
+    @token_check
+    def post(self, user_id):
+        if 'test_id' not in flask.request.args:
+            return {'message': 'Invalid test ID'}, 500
+        user = User.query.filter_by(id=user_id).first()
+        test = Test.query.filter_by(
+            id=flask.request.args.get('test_id')).first()
+        doc = test.create_pdf()
+        pdf_name = f'{test.name}-{user.username}-{datetime.datetime.now()}'
+        doc.generate_pdf(
+            os.path.abspath(
+                os.path.join(
+                    os.path.dirname(__file__), '..', 'pdfs', pdf_name)))
+        return flask.send_file(
+            os.path.abspath(
+                os.path.join(
+                    os.path.dirname(__file__), '..', 'pdfs',
+                    pdf_name + '.pdf')),
+            as_attachment=True)
 
 @api.route('/api/delete/subject')
 class SubjectDelete(Resource):
