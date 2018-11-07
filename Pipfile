@@ -12,6 +12,7 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-cors = "*"
 pyjwt = "*"
+pylatex = "*"
 
 [dev-packages]
 pytest = "*"
