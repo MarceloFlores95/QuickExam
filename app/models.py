@@ -94,7 +94,7 @@ class Variable(db.Model):
         return value
 
 
-class QuestionOpen(db.Model, PDF):
+class QuestionOpen(db.Model):
     __tablename__ = 'QuestionOpen'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(10000), nullable=False)
@@ -114,7 +114,7 @@ class QuestionOpen(db.Model, PDF):
         doc_answers.add_item('Respuesta de pregunta abierta')
 
 
-class QuestionTF(db.Model, PDF):
+class QuestionTF(db.Model):
     __tablename__ = 'QuestionTF'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(10000), nullable=False)
@@ -141,7 +141,7 @@ class QuestionTF(db.Model, PDF):
         doc_answers.add_item('VERDADERO' if expr else 'FALSO')
 
 
-class QuestionMulti(db.Model, PDF):
+class QuestionMulti(db.Model):
     __tablename__ = 'QuestionMulti'
     id = db.Column(db.Integer, primary_key=True)
     correct_answer = db.Column(db.String(1000), nullable=False)
