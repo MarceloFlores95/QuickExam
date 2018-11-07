@@ -18,6 +18,10 @@ def t_START(t):
     return t
 
 
+def t_exp_error(t):
+    raise LexerInvalidToken
+
+
 def t_error(t):
     raise LexerInvalidToken
 

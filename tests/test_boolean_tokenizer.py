@@ -18,14 +18,12 @@ def test_and():
 
 
 def test_true():
-    assert string_to_tokens('1trueTrue') == [('TRUE', True), ('TRUE', True),
-                                             ('TRUE', True)]
+    assert string_to_tokens('trueTrue') == [('TRUE', True), ('TRUE', True)]
 
 
 def test_false():
-    assert string_to_tokens('0falseFalse') == [('FALSE', False),
-                                               ('FALSE', False),
-                                               ('FALSE', False)]
+    assert string_to_tokens('falseFalse') == [('FALSE', False), ('FALSE',
+                                                                 False)]
 
 
 def test_variable():
@@ -35,3 +33,7 @@ def test_variable():
 
 def test_not():
     assert string_to_tokens('~b') == [('NOT', '~'), ('VAR', 'b')]
+
+
+def test_string():
+    assert string_to_tokens('"Hola"') == [('STRING', 'Hola')]

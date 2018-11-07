@@ -6,6 +6,7 @@ from .parsers import *
 import jwt
 import itertools
 import datetime
+import pylatex
 
 SECRET = 'RuloEsHermoso'
 
@@ -82,11 +83,17 @@ class TopicViewAdd(Resource):
     @token_check
     def get(self, user_id):
         subject_id = flask.request.args.get('subject_id')
-        subject = Subject.query.filter_by(id=subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=subject_id, user_id=user_id).first()
         topics = [topic.get_parameters() for topic in subject.topics]
         return topics
 
-    @api.doc(security='apikey', params={'name': "The topic's name", 'subject_id': 'A subject id'})
+    @api.doc(
+        security='apikey',
+        params={
+            'name': "The topic's name",
+            'subject_id': 'A subject id'
+        })
     @token_check
     def post(self, user_id):
         topic_data = topic_parser.parse_args()
@@ -104,18 +111,28 @@ class QuestionView(Resource):
     def get(self, user_id):
         topic_id = flask.request.args.get('topic_id')
         topic = Topic.query.filter_by(id=topic_id).first()
-        questions = [question.get_parameters() for question in
-                     itertools.chain(topic.questions_multi, topic.questions_open, topic.questions_tf)]
+        questions = [
+            question.get_parameters()
+            for question in itertools.chain(topic.questions_multi, topic.
+                                            questions_open, topic.questions_tf)
+        ]
         return questions
 
 
 @api.route('/api/question/open')
 class QuestionOpenAdd(Resource):
-    @api.doc(security='apikey', params={'text': "The text of the question", 'topic_id': "The id of a topic"})
+    @api.doc(
+        security='apikey',
+        params={
+            'text': 'The text of the question',
+            'topic_id': "The id of a topic"
+        })
     @token_check
     def post(self, user_id):
         question_open_data = question_open_parser.parse_args()
-        question_open = QuestionOpen(text=question_open_data['text'], topic_id=question_open_data['topic_id'])
+        question_open = QuestionOpen(
+            text=question_open_data['text'],
+            topic_id=question_open_data['topic_id'])
         db.session.add(question_open)
         db.session.commit()
         return {'message': 'Successfully added Open Question'}
@@ -123,14 +140,20 @@ class QuestionOpenAdd(Resource):
 
 @api.route('/api/question/tf')
 class QuestionTFAdd(Resource):
-    @api.doc(security='apikey',
-             params={'text': "The text of the question", 'expression': "The expression to evaluate for the answer",
-                     'topic_id': "The id of a topic"})
+    @api.doc(
+        security='apikey',
+        params={
+            'text': "The text of the question",
+            'expression': "The expression to evaluate for the answer",
+            'topic_id': "The id of a topic"
+        })
     @token_check
     def post(self, user_id):
         question_tf_data = question_tf_parser.parse_args()
-        question_tf = QuestionTF(text=question_tf_data['text'], expression=question_tf_data['expression'],
-                                 topic_id=question_tf_data['topic_id'])
+        question_tf = QuestionTF(
+            text=question_tf_data['text'],
+            expression=question_tf_data['expression'],
+            topic_id=question_tf_data['topic_id'])
         db.session.add(question_tf)
         db.session.commit()
         return {'message': 'Successfully added True or False Question'}
@@ -205,29 +228,52 @@ class VariableViewAdd(Resource):
         question_tf_id = flask.request.args.get('question_tf_id')
         question_multi_id = flask.request.args.get('question_multi_id')
         if question_open_id is not None:
-            question_open = QuestionOpen.query.filter_by(id=question_open_id).first()
-            variables = [variable.get_parameters() for variable in question_open.variables]
+            question_open = QuestionOpen.query.filter_by(
+                id=question_open_id).first()
+            variables = [
+                variable.get_parameters()
+                for variable in question_open.variables
+            ]
         elif question_tf_id is not None:
             question_tf = QuestionTF.query.filter_by(id=question_tf_id).first()
-            variables = [variable.get_parameters() for variable in question_tf.variables]
+            variables = [
+                variable.get_parameters() for variable in question_tf.variables
+            ]
         else:
-            question_multi = QuestionMulti.query.filter_by(id=question_multi_id).first()
-            variables = [variable.get_parameters() for variable in question_multi.variables]
+            question_multi = QuestionMulti.query.filter_by(
+                id=question_multi_id).first()
+            variables = [
+                variable.get_parameters()
+                for variable in question_multi.variables
+            ]
         return variables
 
-    @api.doc(security='apikey',
-             params={'values': "The values the variable can take", 'symbol': "The symbol to identify the variable",
-                     'type': "The data type of the variable",
-                     'question_open_id': "The id of the open question the variables belongs to (can be null)",
-                     'question_tf_id': "The id of the true or false question the variables belongs to (can be null)",
-                     'question_multi_id': "The id of the multiple choice question the variables belongs to (can be null)"})
+    @api.doc(
+        security='apikey',
+        params={
+            'values':
+            "The values the variable can take",
+            'symbol':
+            "The symbol to identify the variable",
+            'type':
+            "The data type of the variable",
+            'question_open_id':
+            "The id of the open question the variables belongs to (can be null)",
+            'question_tf_id':
+            "The id of the true or false question the variables belongs to (can be null)",
+            'question_multi_id':
+            "The id of the multiple choice question the variables belongs to (can be null)"
+        })
     @token_check
     def post(self, user_id):
         variable_data = variable_parser.parse_args()
-        variable = Variable(values=variable_data['values'], symbol=variable_data['symbol'], type=variable_data['type'],
-                            question_open_id=variable_data.get('question_open_id'),
-                            question_tf_id=variable_data.get('question_tf_id'),
-                            question_multi_id=variable_data.get('question_multi_id'))
+        variable = Variable(
+            values=variable_data['values'],
+            symbol=variable_data['symbol'],
+            type=variable_data['type'],
+            question_open_id=variable_data.get('question_open_id'),
+            question_tf_id=variable_data.get('question_tf_id'),
+            question_multi_id=variable_data.get('question_multi_id'))
         db.session.add(variable)
         db.session.commit()
         return {'message': 'Successfully added Variable'}
@@ -248,7 +294,11 @@ class TestViewAdd(Resource):
     @token_check
     def post(self, user_id):
         test_data = test_parser.parse_args()
-        test = Test(name=test_data['name'], header=test_data['header'], count=test_data['count'], user_id=user_id)
+        test = Test(
+            name=test_data['name'],
+            header=test_data['header'],
+            count=test_data['count'],
+            user_id=user_id)
         db.session.add(test)
         db.session.commit()
         return {'message': 'Successfully added Test'}
@@ -271,8 +321,10 @@ class TestQuestionsViewAdd(Resource):
     @token_check
     def post(self, user_id):
         test_questions_data = test_questions_parser.parse_args()
-        test_questions = TestQuestions(topic_id=test_questions_data['topic_id'], count=test_questions_data['count'],
-                                       test_id=test_questions_data['test_id'])
+        test_questions = TestQuestions(
+            topic_id=test_questions_data['topic_id'],
+            count=test_questions_data['count'],
+            test_id=test_questions_data['test_id'])
         db.session.add(test_questions)
         db.session.commit()
         return {'message': 'Successfully added Test Questions'}

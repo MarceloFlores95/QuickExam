@@ -5,7 +5,7 @@ from decimal import Decimal, getcontext, ROUND_HALF_UP
 getcontext().rounding = ROUND_HALF_UP
 
 
-class QuestionParser():
+class QuestionParser:
     def __init__(self, **kwargs):
         self.table = kwargs
         self.tokens = tokens
