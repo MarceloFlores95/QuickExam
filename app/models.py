@@ -1,5 +1,4 @@
 from .app import db
-from .pdf import PDF
 from typing import Dict, Union, List
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 from werkzeug.security import generate_password_hash, check_password_hash
