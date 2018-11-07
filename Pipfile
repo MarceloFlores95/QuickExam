@@ -6,6 +6,12 @@ name = "pypi"
 [packages]
 sqlalchemy = "*"
 ply = "*"
+flask = "*"
+flask-restplus = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
+flask-cors = "*"
+pyjwt = "*"
 
 [dev-packages]
 pytest = "*"
