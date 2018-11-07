@@ -1,21 +1,20 @@
 <template>
 <v-container grid-list-md text-xs-center>
   <div class="Login">
-    <h1>Login</h1>
+    <h1 class="text-sm-left">Login</h1>
     <v-card>
-        <h2>UserName</h2>
+        <h2 class="text-sm-left">UserName</h2>
         <v-text-field
-        v-model="password"
+        v-model="user.username"
         box
         color="deep-purple"
         counter="6"
         label="UserName"
         style="min-height: 96px"
-        type="password"
       ></v-text-field>
-      <h2>Password</h2>
+      <h2 class="text-sm-left">Password</h2>
       <v-text-field
-        v-model="password"
+        v-model="user.password"
         box
         color="deep-purple"
         counter="6"
@@ -23,6 +22,9 @@
         style="min-height: 96px"
         type="password"
       ></v-text-field>
+
+      <v-btn>Login </v-btn>
+      <v-btn v-on:click="userLogin(user)">Register </v-btn>
     </v-card>
   </div>
   </v-container>
@@ -45,15 +47,13 @@ export default {
   name: 'UserLogin',
   data () {
     return {
+      user: {
+        username: undefined,
+        password: undefined
+      },
       message: 'UserLogin',
-      agreement: false,
-      bio: 'Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts',
       dialog: false,
-      email: undefined,
-      form: false,
       isLoading: false,
-      password: undefined,
-      phone: undefined,
       rules: {
         email: v => (v || '').match(/@/) || 'Please enter a valid email',
         length: len => v => (v || '').length >= len || `Invalid character length, required ${len}`,
@@ -65,6 +65,11 @@ export default {
   },
   components: {
 
+  },
+  methods: {
+    userLogin: function (payload) {
+      this.$store.dispatch('userRegister', payload)
+    }
   }
 }
 </script>
