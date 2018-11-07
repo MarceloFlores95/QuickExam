@@ -6,7 +6,7 @@ from pylatex import Subsection
 import random
 import re
 from evaluator import QuestionParser, BooleanParser
-from pylatex import Document, Enumerate, Section, NewPage
+from pylatex import Document, Enumerate, Section, NewPage, LineBreak
 import functools
 
 getcontext().rounding = ROUND_HALF_UP
@@ -97,6 +97,7 @@ class QuestionOpen(db.Model):
         parsed_text = QuestionParser(**variable_dict).parse(self.text)
         with doc.create(Section(parsed_text)):
             doc.append('Respuesta: ')
+            doc.append(LineBreak())
         doc_answers.add_item('Respuesta de pregunta abierta')
 
 
@@ -123,7 +124,7 @@ class QuestionTF(db.Model):
             variable_dict[variable.symbol] = variable.value
         parsed_text = QuestionParser(**variable_dict).parse(self.text)
         with doc.create(Section(parsed_text)):
-            doc.append('Respuesta: ')
+            doc.append('Verdadero\t\tFalso')
         expr = QuestionParser(**variable_dict).parse(self.expression)
         doc_answers.add_item('VERDADERO' if expr else 'FALSO')
 
@@ -157,6 +158,7 @@ class QuestionMulti(db.Model):
         answers = list(
             map(question_parser.parse,
                 map(lambda x: x.answer, self.dummy_questions)))
+        random.shuffle(answers)
         correct_pos = random.randint(0, len(answers))
         answers.insert(correct_pos, correct_answer)
         with doc.create(Section(parsed_text)):
@@ -166,7 +168,7 @@ class QuestionMulti(db.Model):
                                                                  1})) as enum:
                 for answer in answers:
                     enum.add_item(answer)
-        doc_answers.add_item(char(ord('a') + correct_pos))
+        doc_answers.add_item(chr(ord('a') + correct_pos))
 
 
 class DummyAnswers(db.Model):
