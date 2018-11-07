@@ -4,6 +4,14 @@
  <v-container grid-list-md text-xs-center>
     <v-layout row wrap>
 
+        <v-flex xs6>
+            <v-btn large >Reactivos</v-btn>
+        </v-flex>
+
+        <v-flex xs6>
+            <v-btn large>Examenes</v-btn>
+        </v-flex>
+
       <v-flex xs2>
         <v-card>
           <v-card-text class="px-0">Materia</v-card-text>
@@ -125,7 +133,7 @@
             <v-btn flat icon>
                 <v-icon >edit</v-icon>
             </v-btn>
-            <v-btn flat icon>
+            <v-btn flat icon v-on:click="prueba()">
                 <v-icon >delete</v-icon>
             </v-btn>
         </v-card>
@@ -144,6 +152,12 @@ export default {
     Materias: ['Quimica', 'Español', 'Historia', 'Inglés'],
     Temas: ['Hentai', 'Grammar', 'Historia Mundial'],
     Reactivos: ['Que pedo morra?']
-  })
+  }),
+  methods: {
+    prueba: function () {
+      this.$store.commit('increment')
+      console.log(this.$store.state.count)
+    }
+  }
 }
 </script>

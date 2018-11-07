@@ -19,14 +19,6 @@
     <v-container grid-list-md text-xs-center>
         <v-layout row wrap>
 
-        <v-flex xs6>
-            <v-btn large >Reactivos</v-btn>
-        </v-flex>
-
-        <v-flex xs6>
-            <v-btn large>Examenes</v-btn>
-        </v-flex>
-
         </v-layout>
     </v-container>
     <router-view/>
