@@ -1,8 +1,11 @@
 <template>
+<v-app>
+
   <div id="app">
-    <img src="./assets/logo.png">
+
     <router-view/>
   </div>
+  </v-app>
 </template>
 
 <script>
@@ -17,7 +20,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: #4E4848;
+  background-color: #FFFF;
 }
 </style>
