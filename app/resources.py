@@ -136,22 +136,40 @@ class QuestionTFAdd(Resource):
         return {'message': 'Successfully added True or False Question'}
 
 
+# QuestionMulti without the list of dummy answers
 @api.route('/api/question/multi')
 class QuestionMultiAdd(Resource):
     @api.doc(security='apikey',
              params={'text': "The text of the question", 'correct_answer': "The correct answer of the question",
-                     'dummies': "Array with dummy answers for the question", 'topic_id': "The id of a topic"})
+                     'topic_id': "The id of a topic"})
     @token_check
     def post(self, user_id):
         question_multi_data = question_multi_parser.parse_args()
         question_multi = QuestionMulti(text=question_multi_data['text'],
-                                       correct_answer=question_multi_data['correct_answer'], topic_id=['topic_id'])
+                                       correct_answer=question_multi_data['correct_answer'],
+                                       topic_id=question_multi_data['topic_id'])
         db.session.add(question_multi)
-        for dummy in question_multi_data['dummies']:
-            dummy_answer = DummyAnswers(answer=dummy, question_id=question_multi.id)
-            db.session.add(dummy_answer)
         db.session.commit()
         return {'message': 'Successfully added Multiple choice Question'}
+
+
+# QuestionMulti WITH the list of dummy answers
+# @api.route('/api/question/multi')
+# class QuestionMultiAdd(Resource):
+#     @api.doc(security='apikey',
+#              params={'text': "The text of the question", 'correct_answer': "The correct answer of the question",
+#                      'dummies': "Array with dummy answers for the question", 'topic_id': "The id of a topic"})
+#     @token_check
+#     def post(self, user_id):
+#         question_multi_data = question_multi_parser.parse_args()
+#         question_multi = QuestionMulti(text=question_multi_data['text'],
+#                                        correct_answer=question_multi_data['correct_answer'], topic_id=['topic_id'])
+#         db.session.add(question_multi)
+#         for dummy in question_multi_data['dummies']:
+#             dummy_answer = DummyAnswers(answer=dummy, question_id=question_multi.id)
+#             db.session.add(dummy_answer)
+#         db.session.commit()
+#         return {'message': 'Successfully added Multiple choice Question'}
 
 
 @api.route('/api/dummy_answers')
@@ -160,7 +178,7 @@ class DummyAnswersAdd(Resource):
     @token_check
     def get(self, user_id):
         question_multi_id = flask.request.args.get('question_multi_id')
-        question_multi = QuestionMulti.query.filter_by(id=question_multi_id)
+        question_multi = QuestionMulti.query.filter_by(id=question_multi_id).first()
         dummies = [dummy.get_parameters() for dummy in question_multi.dummy_questions]
         return dummies
 
