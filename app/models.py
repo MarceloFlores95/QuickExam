@@ -84,10 +84,9 @@ class Variable(db.Model):
     @property
     def value(self) -> Union[int, str]:
         values = self.values.split(',')
-        value = random.sample(values, 1)
+        value = random.choice(values)
         if re.match(r'\d+-\d+', value):
-            split_value = list(map(int, value.split('-')))
-            return random.sample(range(split_value[0], split_value[1] + 1), 1)
+            return random.randint(*value.split('-'))
         if self.type == 'int':
             return int(value)
         if self.type == 'dec':
