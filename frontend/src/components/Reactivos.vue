@@ -5,11 +5,11 @@
     <v-layout row wrap>
 
         <v-flex xs6>
-            <v-btn large >Reactivos</v-btn>
+            <v-btn large color ="blue darken-4" dark >Reactivos</v-btn>
         </v-flex>
 
         <v-flex xs6>
-            <v-btn large>Examenes</v-btn>
+            <v-btn large router-link to= "/Exams">Examenes</v-btn>
         </v-flex>
 
       <v-flex xs2>
