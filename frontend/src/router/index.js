@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
+import Exams from '@/components/Exams.vue'
 import Reactivos from '@/components/Reactivos'
 import Login from '@/components/Login'
 
@@ -14,7 +15,12 @@ export default new Router({
       component: HelloWorld
     },
     {
-      path: '/',
+      path: '/Exams',
+      name: 'Exams',
+      component: Exams
+      },
+    {
+      path: '/Reactivos',
       name: 'Reactivos',
       component: Reactivos
     },

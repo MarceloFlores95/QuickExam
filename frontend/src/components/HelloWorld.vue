@@ -85,10 +85,10 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'Quick Exam',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Quick Exam'
     }
   }
 }
@@ -108,6 +108,6 @@ li {
   margin: 0 10px;
 }
 a {
-  color: #42b983;
+  color: #4E4848;
 }
 </style>
