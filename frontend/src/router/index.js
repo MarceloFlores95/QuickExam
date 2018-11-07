@@ -18,7 +18,7 @@ export default new Router({
       path: '/Exams',
       name: 'Exams',
       component: Exams
-      },
+    },
     {
       path: '/Reactivos',
       name: 'Reactivos',
