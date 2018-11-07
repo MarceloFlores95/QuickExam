@@ -57,6 +57,11 @@ class Variable(db.Model):
     question_multi_id = db.Column(db.Integer,
                                   db.ForeignKey('QuestionMulti.id'))
 
+    def get_parameters(self):
+        return {"id": self.id, "values": self.values, "symbol": self.symbol, "type": self.type,
+                "question_open_id": self.question_open_id, "question_tf_id": self.question_tf_id,
+                "question_multi_id": self.question_multi_id}
+
 
 class QuestionOpen(db.Model):
     __tablename__ = 'QuestionOpen'
@@ -112,6 +117,7 @@ class Test(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     header = db.Column(db.String(10000), nullable=False)
+    count = db.Column(db.Integer, nullable=False)
     questions = db.relationship('TestQuestions', cascade='all')
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
 
@@ -124,12 +130,12 @@ class Test(db.Model):
 class TestQuestions(db.Model):
     __tablename__ = 'TestQuestions'
     __table_args__ = (
-        db.UniqueConstraint('topic', 'test_id'),
+        db.UniqueConstraint('topic_id', 'test_id'),
     )
     id = db.Column(db.Integer, primary_key=True)
-    topic = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
+    topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     count = db.Column(db.Integer)
     test_id = db.Column(db.Integer, db.ForeignKey('Test.id'), nullable=False)
 
     def get_parameters(self):
-        return {"id": self.id, "topic": self.topic, "count": self.count}
+        return {"id": self.id, "topic_id": self.topic_id, "count": self.count}

@@ -78,7 +78,6 @@ class SubjectView(Resource):
 
 @api.route('/api/topic')
 class TopicView(Resource):
-
     @api.doc(security='apikey', params={'subject_id': "The id of a subject"})
     @token_check
     def get(self, user_id):
@@ -89,7 +88,7 @@ class TopicView(Resource):
 
     @api.doc(security='apikey', params={'name': "The topic's name", 'subject_id': 'A subject id'})
     @token_check
-    def post(self):
+    def post(self, user_id):
         topic_data = topic_parser.parse_args()
         topic = Topic(
             name=topic_data['name'], subject_id=topic_data['subject_id'])
@@ -100,7 +99,6 @@ class TopicView(Resource):
 
 @api.route('/api/question')
 class QuestionView(Resource):
-
     @api.doc(security='apikey', params={'topic_id': "The id of a topic"})
     @token_check
     def get(self, user_id):
@@ -113,7 +111,6 @@ class QuestionView(Resource):
 
 @api.route('/api/question/open')
 class QuestionOpenAdd(Resource):
-
     @api.doc(security='apikey', params={'text': 'The text of the question', 'topic_id': "The id of a topic"})
     @token_check
     def post(self, user_id):
@@ -126,7 +123,6 @@ class QuestionOpenAdd(Resource):
 
 @api.route('/api/question/tf')
 class QuestionTFAdd(Resource):
-
     @api.doc(security='apikey',
              params={'text': "The text of the question", 'expression': "The expression to evaluate for the answer",
                      'topic_id': "The id of a topic"})
@@ -140,14 +136,112 @@ class QuestionTFAdd(Resource):
         return {'message': 'Successfully added True or False Question'}
 
 
-#@api.route('/api/question/multi')
-#class QuestionMultiAdd(Resource):
+@api.route('/api/question/multi')
+class QuestionMultiAdd(Resource):
+    @api.doc(security='apikey',
+             params={'text': "The text of the question", 'correct_answer': "The correct answer of the question",
+                     'dummies': "Array with dummy answers for the question", 'topic_id': "The id of a topic"})
+    @token_check
+    def post(self, user_id):
+        question_multi_data = question_multi_parser.parse_args()
+        question_multi = QuestionMulti(text=question_multi_data['text'],
+                                       correct_answer=question_multi_data['correct_answer'], topic_id=['topic_id'])
+        db.session.add(question_multi)
+        for dummy in question_multi_data['dummies']:
+            dummy_answer = DummyAnswers(answer=dummy, question_id=question_multi.id)
+            db.session.add(dummy_answer)
+        db.session.commit()
+        return {'message': 'Successfully added Multiple choice Question'}
 
-    #@api.doc(security='apikey',
-    #         params={'text': "The text of the question", 'correct_answer': "The correct answer of the question",
-    #                 'dummies': "Array with dummy answers for the question", 'topic_id': "The id of a topic"})
-    #@token_check
-    #def post(self, user_id):
-    #    question_multi_data = question_multi_parser.parse_args()
-    #    question_multi = QuestionMulti(text=question_multi_data['text'],
-    #                                   correct_answer=question_multi_data['correct_answer'])
+
+@api.route('/api/variable')
+class VariableView(Resource):
+    @api.doc(security='apikey',
+             params={'question_open_id': "The id of the open question the variable belongs to (can be null)",
+                     'question_tf_id': "The id of the true or false question the variable belongs to (can be null)",
+                     'question_multi_id': "The id of the multiple choice question the variable belongs to (can be null)"})
+    @token_check
+    def get(self, user_id):
+        question_open_id = flask.request.args.get('question_open_id')
+        question_tf_id = flask.request.args.get('question_tf_id')
+        question_multi_id = flask.request.args.get('question_multi_id')
+        if question_open_id is not None:
+            question_open = QuestionOpen.query.filter_by(id=question_open_id).first()
+            variables = [variable.get_parameters() for variable in question_open.variables]
+        elif question_tf_id is not None:
+            question_tf = QuestionTF.query.filter_by(id=question_tf_id).first()
+            variables = [variable.get_parameters() for variable in question_tf.variables]
+        else:
+            question_multi = QuestionMulti.query.filter_by(id=question_multi_id).first()
+            variables = [variable.get_parameters() for variable in question_multi.variables]
+        return variables
+
+    @api.doc(security='apikey',
+             params={'values': "The values the variable can take", 'symbol': "The symbol to identify the variable",
+                     'type': "The data type of the variable",
+                     'question_open_id': "The id of the open question the variables belongs to (can be null)",
+                     'question_tf_id': "The id of the true or false question the variables belongs to (can be null)",
+                     'question_multi_id': "The id of the multiple choice question the variables belongs to (can be null)"})
+    @token_check
+    def post(self, user_id):
+        variable_data = variable_parser.parse_args()
+        variable = Variable(values=variable_data['values'], symbol=variable_data['symbol'], type=variable_data['type'],
+                            question_open_id=variable_data.get('question_open_id'),
+                            question_tf_id=variable_data.get('question_tf_id'),
+                            question_multi_id=variable_data.get('question_multi_id'))
+        db.session.add(variable)
+        db.session.commit()
+        return {'message': 'Successfully added Variable'}
+
+
+@api.route('/api/test')
+class TestView(Resource):
+    @api.doc(security='apikey',
+             params={'name': "The name of the test", 'header': "The header for the test",
+                     'count': "The amount of the test types to be generated for the test"})
+    @token_check
+    def post(self, user_id):
+        test_data = test_parser.parse_args()
+        test = Test(name=test_data['name'], header=test_data['header'], count=test_data['count'], user_id=user_id)
+        db.session.add(test)
+        db.session.commit()
+        return {'message': 'Successfully added Test'}
+
+
+@api.route('/api/test/questions')
+class TestQuestionsAdd(Resource):
+    @api.doc(security='apikey',
+             params={'topic_id': "The topic id of the test questions", 'count': "The amount of test questions for the topic",
+                     'test_id': "The id of a test"})
+    @token_check
+    def post(self, user_id):
+        test_questions_data = test_questions_parser.parse_args()
+        test_questions = TestQuestions(topic_id=test_questions_data['topic_id'], count=test_questions_data['count'],
+                                       test_id=test_questions_data['test_id'])
+        db.session.add(test_questions)
+        db.session.commit()
+        return {'message': 'Successfully added Test Questions'}
+
+
+@api.route('/api/delete/user')
+class UserDelete(Resource):
+    @api.doc(security='apikey', params={'username': 'The username'})
+    @token_check
+    def post(self, user_id):
+        user_data = user_parser.parse_args()
+        user = User(username=user_data['username'])
+        db.session.delete(user)
+        db.session.commit()
+        return {'message': 'Successfully deleted User'}
+
+
+@api.route('/api/delete/subject')
+class UserSubject(Resource):
+    @api.doc(security='apikey', params={'subject_id': "The id of a subject"})
+    @token_check
+    def post(self, user_id):
+        subject_data = topic_parser.parse_args()
+        subject = Subject.query.filter_by(id=subject_data['subject_id'])
+        db.session.delete(subject)
+        db.session.commit()
+        return {'message': 'Successfully deleted Subject'}
