@@ -1,6 +1,6 @@
 from .app import db
 from .pdf import PDF
-from typing import Dict, Union
+from typing import Dict, Union, List
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 from werkzeug.security import generate_password_hash, check_password_hash
 from pylatex import Subsection
@@ -11,21 +11,6 @@ from pylatex import Document, Enumerate, Section
 
 getcontext().rounding = ROUND_HALF_UP
 getcontext().prec = 8
-
-
-class User(db.Model):
-    __tablename__ = 'User'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
-    subjects = db.relationship('Subject', cascade='all')
-    tests = db.relationship('Test', cascade='all')
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
 
 
 class Subject(db.Model):
@@ -104,7 +89,8 @@ class QuestionOpen(db.Model):
     def get_parameters(self) -> Dict[str, Union[str, int]]:
         return {"id": self.id, "text": self.text, "topic_id": self.topic_id}
 
-    def append_to_document(self, doc : Document, doc_answers : Enumerate) -> None:
+    def append_to_document(self, doc: Document,
+                           doc_answers: Enumerate) -> None:
         variable_dict = {}
         for variable in self.variables:
             variable_dict[variable.symbol] = variable.value
@@ -130,7 +116,8 @@ class QuestionTF(db.Model):
             "topic_id": self.topic_id
         }
 
-    def append_to_document(self, doc : Document, doc_answers : Enumerate) -> None:
+    def append_to_document(self, doc: Document,
+                           doc_answers: Enumerate) -> None:
         variable_dict = {}
         for variable in self.variables:
             variable_dict[variable.symbol] = variable.value
@@ -160,18 +147,23 @@ class QuestionMulti(db.Model):
             "dummies": [dummy.get_parameters() for dummy in dummies]
         }
 
-    def append_to_document(self, doc : Document, doc_answers : Enumerate):
+    def append_to_document(self, doc: Document, doc_answers: Enumerate):
         variable_dict = {}
         for variable in self.variables:
             variable_dict[variable.symbol] = variable.value
         question_parser = QuestionParser(**variable_dict)
         parsed_text = question_parser.parse(self.text)
         correct_answer = question_parser.parse(self.correct_answer)
-        answers = list(map(question_parser.parse, map(lambda x : x.answer, self.dummy_questions)))
+        answers = list(
+            map(question_parser.parse,
+                map(lambda x: x.answer, self.dummy_questions)))
         correct_pos = random.randint(0, len(answers))
         answers.insert(correct_pos, correct_answer)
         with doc.create(Section(parsed_text)):
-            with doc.create(Enumerate(enumeration_symbol=r'\alph*) ', options={'start' : 1})) as enum:
+            with doc.create(
+                    Enumerate(
+                        enumeration_symbol=r'\alph*) ', options={'start':
+                                                                 1})) as enum:
                 for answer in answers:
                     enum.add_item(answer)
         doc_answers.add_item(char(ord('a') + correct_pos))
@@ -217,3 +209,23 @@ class TestQuestions(db.Model):
 
     def get_parameters(self) -> Dict[str, Union[str, int]]:
         return {"id": self.id, "topic_id": self.topic_id, "count": self.count}
+
+    def get_questions(self) -> list:
+        return random.sample(
+            self.topic.questions_open + self.topic.questions_tf +
+            self.topics.questions_multi, self.count)
+
+
+class User(db.Model):
+    __tablename__ = 'User'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+    subjects = db.relationship('Subject', cascade='all')
+    tests = db.relationship('Test', cascade='all')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
