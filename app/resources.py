@@ -9,7 +9,6 @@ import datetime
 import os
 import pylatex
 
-SECRET = 'RuloEsHermoso'
 
 
 def create_token(user):
@@ -18,7 +17,7 @@ def create_token(user):
             'username': user.username,
             'user_id': user.id,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        }, SECRET)
+        }, app.config['SECRET_KEY'])
     return token
 
 
@@ -26,7 +25,7 @@ def token_check(func):
     def wrapper(*args, **kwargs):
         token = flask.request.headers.get('X-API-KEY')
         try:
-            data = jwt.decode(token, SECRET)
+            data = jwt.decode(token, app.config['SECRET_KEY'])
         except:
             return {'message': 'Invalid token'}, 401
         kwargs['user_id'] = data['user_id']
