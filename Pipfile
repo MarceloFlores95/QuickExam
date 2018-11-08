@@ -18,6 +18,7 @@ pylatex = "*"
 pytest = "*"
 pipenv = "*"
 mypy = "*"
+autoflake = "*"
 
 [requires]
 python_version = "3.7"
