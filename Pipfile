@@ -17,6 +17,7 @@ pylatex = "*"
 [dev-packages]
 pytest = "*"
 pipenv = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.7"
