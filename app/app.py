@@ -5,11 +5,17 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 import os
 
+Debug = os.environ.get('DEBUG', default='True')
+if Debug.lower() in ('f', 'false'):
+    Debug = False
+else:
+    Debug = True
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///QuickExam.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SWAGGER_UI_JSONEDITOR'] = True
-app.config['SECRET_KEY'] = os.urandom(16)
+app.config['SECRET_KEY'] = 'RuloEsHermoso' if Debug else os.urandom(16)
 CORS(app)
 
 authorizations = {
