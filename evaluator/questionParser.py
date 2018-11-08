@@ -80,7 +80,7 @@ class QuestionParser:
     def p_factor_var(self, p):
         'factor : VAR'
         if p[1] not in self.table:
-            raise ParserVariableNotFound
+            raise ParserVariableNotFound(p[1])
         p[0] = self.table[p[1]]
 
     def p_factor_expression(self, p):
