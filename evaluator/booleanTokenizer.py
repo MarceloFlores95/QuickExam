@@ -78,7 +78,7 @@ def t_VAR(t):
 
 
 def t_error(t):
-    raise LexerInvalidToken
+    raise LexerInvalidToken(t.value)
 
 
 t_ignore = ' \r\n\t'

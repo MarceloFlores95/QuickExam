@@ -6,7 +6,8 @@ from pylatex import Subsection
 import random
 import re
 from evaluator import QuestionParser, BooleanParser
-from pylatex import Document, Enumerate, Section, NewPage, LineBreak
+from pylatex import Document, Enumerate, Section, NewPage, LineBreak, Command
+from pylatex.utils import bold
 import functools
 
 getcontext().rounding = ROUND_HALF_UP
@@ -71,7 +72,8 @@ class Variable(db.Model):
         values = self.values.split(',')
         value = random.choice(values)
         if re.match(r'\d+-\d+', value):
-            return random.randint(*value.split('-'))
+            splited_values = value.split('-')
+            return random.randint(int(splited_values[0]), int(splited_values[1]))
         if self.type == 'int':
             return int(value)
         if self.type == 'dec':
@@ -124,8 +126,8 @@ class QuestionTF(db.Model):
             variable_dict[variable.symbol] = variable.value
         parsed_text = QuestionParser(**variable_dict).parse(self.text)
         with doc.create(Section(parsed_text)):
-            doc.append('Verdadero\t\tFalso')
-        expr = QuestionParser(**variable_dict).parse(self.expression)
+            doc.append(bold('Verdadero\t\tFalso'))
+        expr = BooleanParser(**variable_dict).parse(self.expression)
         doc_answers.add_item('VERDADERO' if expr else 'FALSO')
 
 
@@ -216,6 +218,7 @@ class Test(db.Model):
             doc.append('Guía de respuestas')
             doc.append(enum)
             doc.append(NewPage())
+            doc.append(Command('setcounter', ['section', '0']))
         return doc
 
 

@@ -73,7 +73,7 @@ class BooleanParser:
         if p[1] in self.table:
             p[0] = self.table[p[1]]
         else:
-            raise ParserVariableNotFound
+            raise ParserVariableNotFound(p[1])
 
     def p_factor_string(self, p):
         'factor : STRING'
