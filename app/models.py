@@ -71,7 +71,8 @@ class Variable(db.Model):
         values = self.values.split(',')
         value = random.choice(values)
         if re.match(r'\d+-\d+', value):
-            return random.randint(*value.split('-'))
+            splited_values = value.split('-')
+            return random.randint(int(splited_values[0]), int(splited_values[1]))
         if self.type == 'int':
             return int(value)
         if self.type == 'dec':
@@ -125,7 +126,7 @@ class QuestionTF(db.Model):
         parsed_text = QuestionParser(**variable_dict).parse(self.text)
         with doc.create(Section(parsed_text)):
             doc.append('Verdadero\t\tFalso')
-        expr = QuestionParser(**variable_dict).parse(self.expression)
+        expr = BooleanParser(**variable_dict).parse(self.expression)
         doc_answers.add_item('VERDADERO' if expr else 'FALSO')
 
 
