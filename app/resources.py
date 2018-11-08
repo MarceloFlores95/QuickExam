@@ -60,6 +60,14 @@ class UserRegister(Resource):
         return {'token': token.decode('UTF-8')}
 
 
+@api.route('/api/user')
+class UserView(Resource):
+    @api.doc(security='apikey')
+    @token_check
+    def get(self, user_id):
+        user = User.query.filter_by(id=user_id).first()
+        return user.get_parameters()
+
 @api.route('/api/subject')
 class SubjectViewAdd(Resource):
     @api.doc(security='apikey')
@@ -76,7 +84,7 @@ class SubjectViewAdd(Resource):
         subject = Subject(name=subject_data['name'], user_id=user_id)
         db.session.add(subject)
         db.session.commit()
-        return {'message': 'Successfully added Subject'}
+        return subject.get_parameters()
 
 
 @api.route('/api/topic')
@@ -103,7 +111,7 @@ class TopicViewAdd(Resource):
             name=topic_data['name'], subject_id=topic_data['subject_id'])
         db.session.add(topic)
         db.session.commit()
-        return {'message': 'Successfully added Topic'}
+        return topic.get_parameters()
 
 
 @api.route('/api/question')
@@ -137,7 +145,7 @@ class QuestionOpenAdd(Resource):
             topic_id=question_open_data['topic_id'])
         db.session.add(question_open)
         db.session.commit()
-        return {'message': 'Successfully added Open Question'}
+        return question_open.get_parameters()
 
 
 @api.route('/api/question/tf')
@@ -158,7 +166,7 @@ class QuestionTFAdd(Resource):
             topic_id=question_tf_data['topic_id'])
         db.session.add(question_tf)
         db.session.commit()
-        return {'message': 'Successfully added True or False Question'}
+        return question_tf.get_parameters()
 
 
 # QuestionMulti without the list of dummy answers
@@ -175,7 +183,7 @@ class QuestionMultiAdd(Resource):
                                        topic_id=question_multi_data['topic_id'])
         db.session.add(question_multi)
         db.session.commit()
-        return {'message': 'Successfully added Multiple choice Question'}
+        return question_multi.get_parameters()
 
 
 # QuestionMulti WITH the list of dummy answers
@@ -194,7 +202,7 @@ class QuestionMultiAdd(Resource):
 #             dummy_answer = DummyAnswers(answer=dummy, question_id=question_multi.id)
 #             db.session.add(dummy_answer)
 #         db.session.commit()
-#         return {'message': 'Successfully added Multiple choice Question'}
+#         return question_multi.get_parameters()
 
 
 @api.route('/api/dummy_answers')
@@ -215,7 +223,7 @@ class DummyAnswersAdd(Resource):
         dummy_answer = DummyAnswers(answer=dummy_answer_data['answer'], question_id=dummy_answer_data['question_id'])
         db.session.add(dummy_answer)
         db.session.commit()
-        return {'message': 'Successfully added Dummy Answer'}
+        return dummy_answer.get_parameters()
 
 
 @api.route('/api/variable')
@@ -278,7 +286,7 @@ class VariableViewAdd(Resource):
             question_multi_id=variable_data.get('question_multi_id'))
         db.session.add(variable)
         db.session.commit()
-        return {'message': 'Successfully added Variable'}
+        return variable.get_parameters()
 
 
 @api.route('/api/test')
@@ -303,7 +311,7 @@ class TestViewAdd(Resource):
             user_id=user_id)
         db.session.add(test)
         db.session.commit()
-        return {'message': 'Successfully added Test'}
+        return test.get_parameters()
 
 
 @api.route('/api/test/questions')
@@ -329,7 +337,7 @@ class TestQuestionsViewAdd(Resource):
             test_id=test_questions_data['test_id'])
         db.session.add(test_questions)
         db.session.commit()
-        return {'message': 'Successfully added Test Questions'}
+        return test_questions.get_parameters()
 
 
 # updates
