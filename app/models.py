@@ -6,7 +6,8 @@ from pylatex import Subsection
 import random
 import re
 from evaluator import QuestionParser, BooleanParser
-from pylatex import Document, Enumerate, Section, NewPage, LineBreak
+from pylatex import Document, Enumerate, Section, NewPage, LineBreak, Command
+from pylatex.utils import bold
 import functools
 
 getcontext().rounding = ROUND_HALF_UP
@@ -125,7 +126,7 @@ class QuestionTF(db.Model):
             variable_dict[variable.symbol] = variable.value
         parsed_text = QuestionParser(**variable_dict).parse(self.text)
         with doc.create(Section(parsed_text)):
-            doc.append('Verdadero\t\tFalso')
+            doc.append(bold('Verdadero\t\tFalso'))
         expr = BooleanParser(**variable_dict).parse(self.expression)
         doc_answers.add_item('VERDADERO' if expr else 'FALSO')
 
@@ -217,6 +218,7 @@ class Test(db.Model):
             doc.append('Guía de respuestas')
             doc.append(enum)
             doc.append(NewPage())
+            doc.append(Command('setcounter', ['section', '0']))
         return doc
 
 
