@@ -1,5 +1,5 @@
 from .app import db
-from typing import Dict, Union, Tuple, Any
+from typing import Any, Dict, Union
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 from werkzeug.security import generate_password_hash, check_password_hash
 from pylatex import Subsection
