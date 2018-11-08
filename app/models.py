@@ -1,5 +1,5 @@
 from .app import db
-from typing import Dict, Union, Tuple
+from typing import Dict, Union, Tuple, Any
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 from werkzeug.security import generate_password_hash, check_password_hash
 from pylatex import Subsection
@@ -21,7 +21,7 @@ class Subject(db.Model):
     topics = db.relationship('Topic', cascade='all')
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
 
-    def get_parameters(self) -> Dict[str, Union[str, int]]:
+    def get_parameters(self) -> Dict[str, Any]:
         topics = Topic.query.filter_by(subject_id=self.id)
         return {
             "subject_id": self.id,
@@ -43,7 +43,7 @@ class Topic(db.Model):
     questions_multi = db.relationship('QuestionMulti', cascade='all')
     test_questions = db.relationship('TestQuestions', cascade='all')
 
-    def get_parameters(self) -> Dict[str, Union[str, int]]:
+    def get_parameters(self) -> Dict[str, Any]:
         questions_open = QuestionOpen.query.filter_by(topic_id=self.id)
         questions_tf = QuestionTF.query.filter_by(topic_id=self.id)
         questions_multi = QuestionMulti.query.filter_by(topic_id=self.id)
@@ -111,7 +111,7 @@ class QuestionOpen(db.Model):
     topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     variables = db.relationship('Variable', cascade='all')
 
-    def get_parameters(self) -> Dict[str, Union[str, int]]:
+    def get_parameters(self) -> Dict[str, Any]:
         variables = Variable.query.filter_by(question_open_id=self.id)
         return {
             "question_open_id": self.id,
@@ -140,7 +140,7 @@ class QuestionTF(db.Model):
     topic_id = db.Column(db.Integer, db.ForeignKey('Topic.id'), nullable=False)
     variables = db.relationship('Variable', cascade='all')
 
-    def get_parameters(self) -> Dict[str, Union[str, int]]:
+    def get_parameters(self) -> Dict[str, Any]:
         variables = Variable.query.filter_by(question_tf_id=self.id)
         return {
             "question_tf_id": self.id,
@@ -171,7 +171,7 @@ class QuestionMulti(db.Model):
     variables = db.relationship('Variable', cascade='all')
     dummy_questions = db.relationship('DummyAnswers', cascade='all')
 
-    def get_parameters(self) -> Dict[str, Union[str, int]]:
+    def get_parameters(self) -> Dict[str, Any]:
         variables = Variable.query.filter_by(question_tf_id=self.id)
         dummies = DummyAnswers.query.filter_by(question_id=self.id)
         return {
@@ -213,7 +213,7 @@ class DummyAnswers(db.Model):
     question_id = db.Column(
         db.Integer, db.ForeignKey('QuestionMulti.id'), nullable=False)
 
-    def get_parameters(self) -> Dict[str, Union[str, int]]:
+    def get_parameters(self) -> Dict[str, Any]:
         return {
             "dummy_answer_id": self.id,
             "answer": self.answer,
@@ -230,7 +230,7 @@ class Test(db.Model):
     questions = db.relationship('TestQuestions', cascade='all')
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
 
-    def get_parameters(self) -> Dict[str, Union[str, int]]:
+    def get_parameters(self) -> Dict[str, Any]:
         questions = TestQuestions.query.filter_by(test_id=self.id)
         return {
             "test_id": self.id,
@@ -270,7 +270,7 @@ class TestQuestions(db.Model):
     count = db.Column(db.Integer)
     test_id = db.Column(db.Integer, db.ForeignKey('Test.id'), nullable=False)
 
-    def get_parameters(self) -> Dict[str, Union[str, int]]:
+    def get_parameters(self) -> Dict[str, Any]:
         return {
             "test_questions_id": self.id,
             "topic_id": self.topic_id,
@@ -293,7 +293,7 @@ class User(db.Model):
     subjects = db.relationship('Subject', cascade='all')
     tests = db.relationship('Test', cascade='all')
 
-    def get_parameters(self) -> Dict[str, Union[str, int]]:
+    def get_parameters(self) -> Dict[str, Any]:
         subjects = Subject.query.filter_by(user_id=self.id)
         tests = Test.query.filter_by(user_id=self.id)
         return {
