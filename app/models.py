@@ -90,7 +90,7 @@ class Variable(db.Model):
         }
 
     @property
-    def value(self) -> Union[int, str]:
+    def value(self) -> Union[int, str, Decimal]:
         values = self.values.split(',')
         value = random.choice(values)
         if re.match(r'\d+-\d+', value):
