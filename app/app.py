@@ -13,10 +13,10 @@ app.config['SECRET_KEY'] = os.urandom(16)
 CORS(app)
 
 authorizations = {
-    'apikey' : {
-        'type' : 'apiKey',
-        'in' : 'header',
-        'name' : 'X-API-KEY'
+    'apikey': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'X-API-KEY'
     }
 }
 
