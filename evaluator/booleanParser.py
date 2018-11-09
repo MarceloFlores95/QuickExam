@@ -7,7 +7,7 @@ class BooleanParser:
     def __init__(self, **kwargs):
         self.table = kwargs
         self.tokens = tokens
-        self.parser = yacc.yacc(module=self, tabmodule='booleanParseTab')
+        self.parser = yacc.yacc(module=self, tabmodule='booleanParseTab', debug=False)
 
     def parse(self, s: str) -> bool:
         return self.parser.parse(s, lexer=boolean_lexer.clone())

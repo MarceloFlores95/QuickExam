@@ -9,7 +9,7 @@ class QuestionParser:
     def __init__(self, **kwargs):
         self.table = kwargs
         self.tokens = tokens
-        self.parser = yacc.yacc(module=self, tabmodule='questionParseTab')
+        self.parser = yacc.yacc(module=self, tabmodule='questionParseTab', debug=False)
 
     def parse(self, s: str) -> str:
         return self.parser.parse(s, lexer=question_lexer.clone())
