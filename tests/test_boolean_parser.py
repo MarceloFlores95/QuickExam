@@ -83,3 +83,19 @@ def test_string_comp_2():
 
 def test_string_comp_3():
     assert BooleanParser(name='Juan').parse('name=="Juan"') == True
+
+
+def test_operations_1():
+    assert parser.parse('(2*5)==10')
+
+
+def test_operations_2():
+    assert BooleanParser(a=5).parse('(2*a)==10') == True
+
+
+def test_operations_3():
+    assert parser.parse('(2*5) < 20') == True
+
+
+def test_operations_4():
+    assert parser.parse('((2+5)*3) == 21') == True

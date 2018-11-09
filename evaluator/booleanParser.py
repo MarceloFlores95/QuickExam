@@ -68,6 +68,34 @@ class BooleanParser:
         'boolean : factor GTE factor'
         p[0] = p[1] >= p[3]
 
+    def p_factor_expression(self, p):
+        'factor : LPAREN a_expression RPAREN'
+        p[0] = p[2]
+
+    def p_expression_plus(self, p):
+        'a_expression : a_expression PLUS a_term'
+        p[0] = p[1] + p[3]
+
+    def p_expression_minus(self, p):
+        'a_expression : a_expression MINUS a_term'
+        p[0] = p[1] - p[3]
+
+    def p_a_expression_term(self, p):
+        'a_expression : a_term'
+        p[0] = p[1]
+
+    def p_term_times(self, p):
+        'a_term : a_term TIMES factor'
+        p[0] = p[1] * p[3]
+
+    def p_term_div(self, p):
+        'a_term : a_term DIV factor'
+        p[0] = p[1] / p[3]
+
+    def p_term_factor(self, p):
+        'a_term : factor'
+        p[0] = p[1]
+
     def p_factor_var(self, p):
         'factor : VAR'
         if p[1] in self.table:
