@@ -1,5 +1,5 @@
 from flask_restplus import Resource
-from .app import api, db, app
+from .app import api, db
 import flask
 from .models import *
 from .parsers import *
@@ -10,13 +10,22 @@ import os
 import pylatex
 
 
+def set_secret():
+    Debug = os.environ.get('DEBUG', default='True')
+    return 'RuloEsHermoso' if Debug.lower() in ('t',
+                                                'true') else os.urandom(16)
+
+
+SECRET_KEY = set_secret()
+
+
 def create_token(user):
     token = jwt.encode(
         {
             'username': user.username,
             'user_id': user.id,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        }, app.config['SECRET_KEY'])
+        }, SECRET_KEY)
     return token
 
 
@@ -24,7 +33,7 @@ def token_check(func):
     def wrapper(*args, **kwargs):
         token = flask.request.headers.get('X-API-KEY')
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, SECRET_KEY)
         except:
             return {'message': 'Invalid token'}, 401
         kwargs['user_id'] = data['user_id']
