@@ -9,7 +9,7 @@ class QuestionParser:
     def __init__(self, **kwargs):
         self.table = kwargs
         self.tokens = tokens
-        self.parser = yacc.yacc(module=self, tabmodule='questionParseTab')
+        self.parser = yacc.yacc(module=self, tabmodule='questionParseTab', debug=False)
 
     def parse(self, s: str) -> str:
         return self.parser.parse(s, lexer=question_lexer.clone())
@@ -80,7 +80,7 @@ class QuestionParser:
     def p_factor_var(self, p):
         'factor : VAR'
         if p[1] not in self.table:
-            raise ParserVariableNotFound
+            raise ParserVariableNotFound(p[1])
         p[0] = self.table[p[1]]
 
     def p_factor_expression(self, p):
