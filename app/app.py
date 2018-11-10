@@ -12,7 +12,7 @@ else:
     Debug = True
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///QuickExam.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or 'sqlite:///QuickExam.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SWAGGER_UI_JSONEDITOR'] = True
 app.config['SECRET_KEY'] = 'RuloEsHermoso' if Debug else os.urandom(16)
