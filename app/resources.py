@@ -371,223 +371,6 @@ class TestQuestionsViewAdd(Resource):
         return test_questions.get_parameters()
 
 
-# updates
-
-
-@api.route('/api/update/user')
-class UserUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'username': "The username",
-            'password': "The password for the user"
-        })
-    @token_check
-    def post(self, user_id):
-        user_data = user_parser.parse_args()
-        user = User.query.filter_by(id=user_id).first()
-        user.username = user_data['username']
-        user.set_password(user_data['password'])
-        db.session.commit()
-        token = create_token(user)
-        return {'token': token.decode('UTF-8')}
-
-
-@api.route('/api/update/subject')
-class SubjectUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'subject_id': "The id of the subject to update",
-            'name': "The subject's name"
-        })
-    @token_check
-    def post(self, user_id):
-        subject_data = subject_parser.parse_args()
-        subject = Subject.query.filter_by(
-            id=subject_data['subject_id']).first()
-        subject.name = subject_data['name']
-        db.session.commit()
-        return {'message': 'Successfully updated Subject'}
-
-
-@api.route('/api/update/topic')
-class TopicUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'topic_id': "The id of the topic to update",
-            'name': "The topic's name"
-        })
-    @token_check
-    def post(self, user_id):
-        topic_data = topic_parser.parse_args()
-        topic = Topic.query.filter_by(id=topic_data['topic_id']).first()
-        topic.name = topic_data['name']
-        db.session.commit()
-        return {'message': 'Successfully updated Topic'}
-
-
-@api.route('/api/update/variable')
-class VariableUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'variable_id': "The id of the variable to update",
-            'values': "The values the variable can take",
-            'symbol': "The symbol to identify the variable",
-            'type': "The data type of the variable"
-        })
-    @token_check
-    def post(self, user_id):
-        variable_data = variable_parser.parse_args()
-        variable = Variable.query.filter_by(
-            id=variable_data['variable_id']).first()
-        variable.values = variable_data['values']
-        variable.symbol = variable_data['symbol']
-        variable.type = variable_data['type']
-        db.session.commit()
-        return {'message': 'Successfully updated Variable'}
-
-
-@api.route('/api/update/question/open')
-class QuestionOpenUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'question_open_id': "The id of the open question to update",
-            'text': 'The text of the question'
-        })
-    @token_check
-    def post(self, user_id):
-        question_open_data = question_open_parser.parse_args()
-        question_open = QuestionOpen.query.filter_by(
-            id=question_open_data['question_open_id']).first()
-        question_open.text = question_open_data['text']
-        db.session.commit()
-        return {'message': 'Successfully updated Open Question'}
-
-
-@api.route('/api/update/question/tf')
-class QuestionTFUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'question_tf_id': "The id of the true or false question to update",
-            'text': "The text of the question",
-            'expression': "The expression to evaluate for the answer"
-        })
-    @token_check
-    def post(self, user_id):
-        question_tf_data = question_tf_parser.parse_args()
-        question_tf = QuestionTF.query.filter_by(
-            id=question_tf_data['question_tf_id']).first()
-        question_tf.text = question_tf_data['text']
-        question_tf.expression = question_tf_data['expression']
-        db.session.commit()
-        return {'message': 'Successfully updated True or False Question'}
-
-
-@api.route('/api/update/question/multi')
-class QuestionMultiUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'question_multi_id':
-            "The id of the multiple choice question to update",
-            'text':
-            "The text of the question",
-            'correct_answer':
-            "The correct answer of the question"
-        })
-    @token_check
-    def post(self, user_id):
-        question_multi_data = question_multi_parser.parse_args()
-        question_multi = QuestionMulti.query.filter_by(
-            id=question_multi_data['question_multi_id']).first()
-        question_multi.text = question_multi_data['text']
-        question_multi.correct_answer = question_multi_data['correct_answer']
-        db.session.commit()
-        return {'message': 'Successfully updated Multiple Choice Question'}
-
-
-@api.route('/api/update/dummy_answer')
-class DummyAnswerUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'dummy_answer_id': "The id of the dummy answer to update",
-            'answer': "The dummy answer"
-        })
-    @token_check
-    def post(self, user_id):
-        dummy_answer_data = dummy_answer_parser.parse_args()
-        dummy_answer = DummyAnswers.query.filter_by(
-            id=dummy_answer_data['dummy_answer_id']).first()
-        dummy_answer.answer = dummy_answer_data['answer']
-        db.session.commit()
-        return {'message': 'Successfully updated Dummy Answer'}
-
-
-@api.route('/api/update/test')
-class TestUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'test_id': "The id of test to update",
-            'name': "The name of the test",
-            'header': "The header for the test",
-            'count':
-            "The amount of the test types to be generated for the test"
-        })
-    @token_check
-    def post(self, user_id):
-        test_data = test_parser.parse_args()
-        test = Test.query.filter_by(id=test_data['test_id']).first()
-        test.name = test_data['name']
-        test.header = test_data['header']
-        test.count = test_data['count']
-        db.session.commit()
-        return {'message': 'Successfully updated Test'}
-
-
-@api.route('/api/update/test/questions')
-class TestQuestionsUpdate(Resource):
-    @api.doc(
-        security='apikey',
-        params={
-            'test_questions_id': "The id of the test questions",
-            'topic_id': "The topic id of the test questions",
-            'count': "The amount of test questions for the topic"
-        })
-    @token_check
-    def post(self, user_id):
-        test_questions_data = test_questions_parser.parse_args()
-        test_questions = TestQuestions.query.filter_by(
-            id=test_questions_data['test_questions_id']).first()
-        test_questions.topic_id = test_questions_data['topic_id']
-        test_questions.count = test_questions_data['count']
-        db.session.commit()
-        return {'message': 'Successfully updated Test Questions'}
-
-
-# deletes
-
-
-@api.route('/api/delete/user')
-class UserDelete(Resource):
-    @api.doc(
-        security='apikey',
-        params={'username': 'The username of the user to delete'})
-    @token_check
-    def post(self, user_id):
-        user_data = user_parser.parse_args()
-        user = User.query.filter_by(username=user_data['username']).first()
-        db.session.delete(user)
-        db.session.commit()
-        return {'message': 'Successfully deleted User'}
-
-
 @api.route('/api/generate_tests')
 class TestGenerator(Resource):
     @api.doc(security='apikey', params={'test_id': 'ID of a test'})
@@ -612,6 +395,223 @@ class TestGenerator(Resource):
             as_attachment=True)
 
 
+# updates
+
+
+@api.route('/api/update/user')
+class UserUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'username': "The username",
+            'password': "The password for the user"
+        })
+    @token_check
+    def post(self, user_id):
+        user_data = user_parser.parse_args()
+        user = User.query.filter_by(id=user_id).first()
+        user.username = user_data['username']
+        user.set_password(user_data['password'])
+        db.session.commit()
+        token = create_token(user)
+        return user.get_parameters()
+
+
+@api.route('/api/update/subject')
+class SubjectUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'subject_id': "The id of the subject to update",
+            'name': "The subject's name"
+        })
+    @token_check
+    def post(self, user_id):
+        subject_data = subject_parser.parse_args()
+        subject = Subject.query.filter_by(
+            id=subject_data['subject_id']).first()
+        subject.name = subject_data['name']
+        db.session.commit()
+        return subject.get_parameters()
+
+
+@api.route('/api/update/topic')
+class TopicUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'topic_id': "The id of the topic to update",
+            'name': "The topic's name"
+        })
+    @token_check
+    def post(self, user_id):
+        topic_data = topic_parser.parse_args()
+        topic = Topic.query.filter_by(id=topic_data['topic_id']).first()
+        topic.name = topic_data['name']
+        db.session.commit()
+        return topic.get_parameters()
+
+
+@api.route('/api/update/variable')
+class VariableUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'variable_id': "The id of the variable to update",
+            'values': "The values the variable can take",
+            'symbol': "The symbol to identify the variable",
+            'type': "The data type of the variable"
+        })
+    @token_check
+    def post(self, user_id):
+        variable_data = variable_parser.parse_args()
+        variable = Variable.query.filter_by(
+            id=variable_data['variable_id']).first()
+        variable.values = variable_data['values']
+        variable.symbol = variable_data['symbol']
+        variable.type = variable_data['type']
+        db.session.commit()
+        return variable.get_parameters()
+
+
+@api.route('/api/update/question/open')
+class QuestionOpenUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'question_open_id': "The id of the open question to update",
+            'text': 'The text of the question'
+        })
+    @token_check
+    def post(self, user_id):
+        question_open_data = question_open_parser.parse_args()
+        question_open = QuestionOpen.query.filter_by(
+            id=question_open_data['question_open_id']).first()
+        question_open.text = question_open_data['text']
+        db.session.commit()
+        return question_open.get_parameters()
+
+
+@api.route('/api/update/question/tf')
+class QuestionTFUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'question_tf_id': "The id of the true or false question to update",
+            'text': "The text of the question",
+            'expression': "The expression to evaluate for the answer"
+        })
+    @token_check
+    def post(self, user_id):
+        question_tf_data = question_tf_parser.parse_args()
+        question_tf = QuestionTF.query.filter_by(
+            id=question_tf_data['question_tf_id']).first()
+        question_tf.text = question_tf_data['text']
+        question_tf.expression = question_tf_data['expression']
+        db.session.commit()
+        return question_tf.get_parameters()
+
+
+@api.route('/api/update/question/multi')
+class QuestionMultiUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'question_multi_id':
+            "The id of the multiple choice question to update",
+            'text':
+            "The text of the question",
+            'correct_answer':
+            "The correct answer of the question"
+        })
+    @token_check
+    def post(self, user_id):
+        question_multi_data = question_multi_parser.parse_args()
+        question_multi = QuestionMulti.query.filter_by(
+            id=question_multi_data['question_multi_id']).first()
+        question_multi.text = question_multi_data['text']
+        question_multi.correct_answer = question_multi_data['correct_answer']
+        db.session.commit()
+        return question_multi.get_parameters()
+
+
+@api.route('/api/update/dummy_answer')
+class DummyAnswerUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'dummy_answer_id': "The id of the dummy answer to update",
+            'answer': "The dummy answer"
+        })
+    @token_check
+    def post(self, user_id):
+        dummy_answer_data = dummy_answer_parser.parse_args()
+        dummy_answer = DummyAnswers.query.filter_by(
+            id=dummy_answer_data['dummy_answer_id']).first()
+        dummy_answer.answer = dummy_answer_data['answer']
+        db.session.commit()
+        return dummy_answer.get_parameters()
+
+
+@api.route('/api/update/test')
+class TestUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'test_id': "The id of test to update",
+            'name': "The name of the test",
+            'header': "The header for the test",
+            'count':
+            "The amount of the test types to be generated for the test"
+        })
+    @token_check
+    def post(self, user_id):
+        test_data = test_parser.parse_args()
+        test = Test.query.filter_by(id=test_data['test_id']).first()
+        test.name = test_data['name']
+        test.header = test_data['header']
+        test.count = test_data['count']
+        db.session.commit()
+        return test.get_parameters()
+
+
+@api.route('/api/update/test/questions')
+class TestQuestionsUpdate(Resource):
+    @api.doc(
+        security='apikey',
+        params={
+            'test_questions_id': "The id of the test questions",
+            'topic_id': "The topic id of the test questions",
+            'count': "The amount of test questions for the topic"
+        })
+    @token_check
+    def post(self, user_id):
+        test_questions_data = test_questions_parser.parse_args()
+        test_questions = TestQuestions.query.filter_by(
+            id=test_questions_data['test_questions_id']).first()
+        test_questions.topic_id = test_questions_data['topic_id']
+        test_questions.count = test_questions_data['count']
+        db.session.commit()
+        return test_questions.get_parameters()
+
+
+# deletes
+
+
+@api.route('/api/delete/user')
+class UserDelete(Resource):
+    @api.doc(
+        security='apikey',
+        params={'username': 'The username of the user to delete'})
+    @token_check
+    def post(self, user_id):
+        user_data = user_parser.parse_args()
+        user = User.query.filter_by(username=user_data['username']).first()
+        db.session.delete(user)
+        db.session.commit()
+        return user.get_parameters()
+
+
 @api.route('/api/delete/subject')
 class SubjectDelete(Resource):
     @api.doc(security='apikey', params={'subject_id': "The id of a subject"})
@@ -622,7 +622,7 @@ class SubjectDelete(Resource):
             id=subject_data['subject_id']).first()
         db.session.delete(subject)
         db.session.commit()
-        return {'message': 'Successfully deleted Subject'}
+        return subject.get_parameters()
 
 
 @api.route('/api/delete/topic')
@@ -634,7 +634,7 @@ class TopicDelete(Resource):
         topic = Topic.query.filter_by(id=topic_data['topic_id']).first()
         db.session.delete(topic)
         db.session.commit()
-        return {'message': 'Successfully deleted Topic'}
+        return topic.get_parameters()
 
 
 @api.route('/api/delete/variable')
@@ -647,7 +647,7 @@ class VariableDelete(Resource):
             id=variable_data['variable_id']).first()
         db.session.delete(variable)
         db.session.commit()
-        return {'message': 'Successfully deleted Variable'}
+        return variable.get_parameters()
 
 
 @api.route('/api/delete/question/open')
@@ -662,7 +662,7 @@ class QuestionOpenDelete(Resource):
             id=question_open_data['question_open_id']).first()
         db.session.delete(question_open)
         db.session.commit()
-        return {'message': 'Successfully deleted Open Question'}
+        return question_open.get_parameters()
 
 
 @api.route('/api/delete/question/tf')
@@ -677,7 +677,7 @@ class QuestionTFDelete(Resource):
             id=question_tf_data['question_tf_id']).first()
         db.session.delete(question_tf)
         db.session.commit()
-        return {'message': 'Successfully deleted True or False Question'}
+        return question_tf.get_parameters()
 
 
 @api.route('/api/delete/question/multi')
@@ -692,7 +692,7 @@ class QuestionMultiDelete(Resource):
             id=question_multi_data['question_multi_id']).first()
         db.session.delete(question_multi)
         db.session.commit()
-        return {'message': 'Successfully deleted Multiple Choice Question'}
+        return question_multi.get_parameters()
 
 
 @api.route('/api/delete/dummy_answer')
@@ -707,7 +707,7 @@ class DummyAnswerDelete(Resource):
             id=dummy_answer_data['dummy_answer_id']).first()
         db.session.delete(dummy_answer)
         db.session.commit()
-        return {'message': 'Successfully deleted Dummy Answer'}
+        return dummy_answer.get_parameters()
 
 
 @api.route('/api/delete/test')
@@ -719,7 +719,7 @@ class TestDelete(Resource):
         test = Test.query.filter_by(id=test_data['test_id']).first()
         db.session.delete(test)
         db.session.commit()
-        return {'message': 'Successfully deleted Test'}
+        return test.get_parameters()
 
 
 @api.route('/api/delete/test/questions')
@@ -734,4 +734,4 @@ class TestQuestionsDelete(Resource):
             id=test_questions_data['test_questions_id']).first()
         db.session.delete(test_questions)
         db.session.commit()
-        return {'message': 'Successfully deleted Test Questions'}
+        return test_questions.get_parameters()
