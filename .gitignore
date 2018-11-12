@@ -120,3 +120,4 @@ evaluator/questionParseTab.py
 evaluator/booleanParseTab.py
 .idea/
 pdfs/
+frontend/node_modules/
