@@ -10,13 +10,13 @@ import os
 import pylatex
 
 
-def set_secret():
+def get_secret():
     Debug = os.environ.get('DEBUG', default='True')
     return 'RuloEsHermoso' if Debug.lower() in ('t',
                                                 'true') else os.urandom(16)
 
 
-SECRET_KEY = set_secret()
+SECRET_KEY = get_secret()
 
 
 def create_token(user):
