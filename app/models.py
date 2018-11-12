@@ -245,7 +245,7 @@ class Test(db.Model):
     def create_pdf(self) -> Document:
         questions = functools.reduce(
             lambda a, b: a + b, map(lambda x: x.get_questions(),
-                                    self.questions))
+                                    self.questions), [])
         doc = Document()
         for i in range(1, self.count + 1):
             random.shuffle(questions)
