@@ -19,11 +19,11 @@ def t_START(t):
 
 
 def t_exp_error(t):
-    raise LexerInvalidToken
+    raise LexerInvalidToken(t.value)
 
 
 def t_error(t):
-    raise LexerInvalidToken
+    raise LexerInvalidToken(t.value)
 
 
 def t_exp_LPAREN(t):

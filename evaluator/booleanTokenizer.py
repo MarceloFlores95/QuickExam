@@ -16,7 +16,8 @@ compiled_true = re.compile(regex_true)
 compiled_false = re.compile(regex_false)
 
 tokens = ('OR', 'AND', 'VAR', 'TRUE', 'FALSE', 'NOT', 'LPAREN', 'RPAREN', 'LT',
-          'GT', 'EQ', 'NEQ', 'LTE', 'GTE', 'INT', 'DECIMAL', 'MINUS', 'STRING')
+          'GT', 'EQ', 'NEQ', 'LTE', 'GTE', 'INT', 'DECIMAL', 'STRING',
+          'PLUS', 'MINUS', 'TIMES', 'DIV')
 
 t_OR = regex_or
 t_NOT = r'~|¬'
@@ -27,9 +28,12 @@ t_LT = r'<'
 t_GT = r'>'
 t_EQ = r'=='
 t_NEQ = r'!='
-t_MINUS = r'-'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
+t_PLUS = r'\+'
+t_MINUS = r'-'
+t_TIMES = r'\*'
+t_DIV = r'/'
 
 
 def t_STRING(t):
@@ -78,7 +82,7 @@ def t_VAR(t):
 
 
 def t_error(t):
-    raise LexerInvalidToken
+    raise LexerInvalidToken(t.value)
 
 
 t_ignore = ' \r\n\t'

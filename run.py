@@ -1,3 +1,5 @@
-from app import app
+from app import create_app
 
-app.run(port=5000, debug=True)
+application = create_app()
+
+application.run(port=5000, debug=True)
