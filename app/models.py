@@ -252,6 +252,7 @@ class Test(db.Model):
         for i in range(1, self.count + 1):
             random.shuffle(questions)
             doc.append(Command('title', self.header))
+            doc.append(Command('date', ''))
             doc.append(NoEscape(r'\maketitle'))
             doc.append(f'Examen tipo {i}')
             enum = Enumerate()
