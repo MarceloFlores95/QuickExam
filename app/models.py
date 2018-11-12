@@ -16,8 +16,9 @@ getcontext().prec = 8
 
 class Subject(db.Model):
     __tablename__ = 'Subject'
+    __table_args__ = (db.UniqueConstraint('name', 'user_id'), )
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=False)
     topics = db.relationship('Topic', cascade='all')
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
 
