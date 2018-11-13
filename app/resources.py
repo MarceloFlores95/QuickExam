@@ -137,12 +137,13 @@ class QuestionView(Resource):
     def get(self, user_id):
         topic_id = flask.request.args.get('topic_id')
         topic = Topic.query.filter_by(id=topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             questions = [
-                question.get_parameters()
-                for question in itertools.chain(topic.questions_multi, topic.
-                                                questions_open, topic.questions_tf)
+                question.get_parameters() for question in itertools.chain(
+                    topic.questions_multi, topic.questions_open, topic.
+                    questions_tf)
             ]
             return questions
         else:
@@ -160,13 +161,24 @@ class QuestionOpenAdd(Resource):
     @token_check
     def post(self, user_id):
         question_open_data = question_open_parser.parse_args()
-        topic = Topic.query.filter_by(id=question_open_data['topic_id']).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        variables = question_open_data.get('variables', [])
+        topic = Topic.query.filter_by(
+            id=question_open_data['topic_id']).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             question_open = QuestionOpen(
                 text=question_open_data['text'],
                 topic_id=question_open_data['topic_id'])
             db.session.add(question_open)
+            db.session.commit()
+            for variable in variables:
+                new_variable = Variable(
+                    values=variable['values'],
+                    symbol=variable['symbol'],
+                    type=variable['type'],
+                    question_open_id=question_open.id)
+                db.session.add(new_variable)
             db.session.commit()
             return question_open.get_parameters()
         else:
@@ -185,8 +197,10 @@ class QuestionTFAdd(Resource):
     @token_check
     def post(self, user_id):
         question_tf_data = question_tf_parser.parse_args()
+        variables = question_tf_data.get('variables', [])
         topic = Topic.query.filter_by(id=question_tf_data['topic_id']).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             question_tf = QuestionTF(
                 text=question_tf_data['text'],
@@ -194,12 +208,19 @@ class QuestionTFAdd(Resource):
                 topic_id=question_tf_data['topic_id'])
             db.session.add(question_tf)
             db.session.commit()
+            for variable in variables:
+                new_variable = Variable(
+                    values=variable['values'],
+                    symbol=variable['symbol'],
+                    type=variable['type'],
+                    question_tf_id=question_tf.id)
+                db.session.add(new_variable)
+            db.session.commit()
             return question_tf.get_parameters()
         else:
             return {'message': 'Topic does not belong to the user'}, 401
 
 
-# QuestionMulti without the list of dummy answers
 @api.route('/api/question/multi')
 class QuestionMultiAdd(Resource):
     @api.doc(
@@ -212,41 +233,37 @@ class QuestionMultiAdd(Resource):
     @token_check
     def post(self, user_id):
         question_multi_data = question_multi_parser.parse_args()
-        topic = Topic.query.filter_by(id=question_multi_data['topic_id']).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
-        dummies = question_multi_data['dummies']
+        variables = question_multi_data.get('variables', [])
+        print(variables)
+        topic = Topic.query.filter_by(
+            id=question_multi_data['topic_id']).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
+        dummies = question_multi_data.get('dummies', [])
         if subject is not None:
-            question_multi = QuestionMulti(text=question_multi_data['text'],
-                                           correct_answer=question_multi_data['correct_answer'],
-                                           topic_id=question_multi_data['topic_id'])
+            question_multi = QuestionMulti(
+                text=question_multi_data['text'],
+                correct_answer=question_multi_data['correct_answer'],
+                topic_id=question_multi_data['topic_id'])
             db.session.add(question_multi)
             db.session.commit()
+            for variable in variables:
+                new_variable = Variable(
+                    values=variable['values'],
+                    symbol=variable['symbol'],
+                    type=variable['type'],
+                    question_multi_id=question_multi.id)
+                print(new_variable)
+                db.session.add(new_variable)
+            db.session.commit()
             for dummy_text in dummies:
-                dummy = DummyAnswers(answer=dummy_text, question_id=question_multi.id)
+                dummy = DummyAnswers(
+                    answer=dummy_text, question_id=question_multi.id)
                 db.session.add(dummy)
             db.session.commit()
             return question_multi.get_parameters()
         else:
             return {'message': 'Topic does not belong to the user'}, 401
-
-
-# QuestionMulti WITH the list of dummy answers
-# @api.route('/api/question/multi')
-# class QuestionMultiAdd(Resource):
-#     @api.doc(security='apikey',
-#              params={'text': "The text of the question", 'correct_answer': "The correct answer of the question",
-#                      'dummies': "Array with dummy answers for the question", 'topic_id': "The id of a topic"})
-#     @token_check
-#     def post(self, user_id):
-#         question_multi_data = question_multi_parser.parse_args()
-#         question_multi = QuestionMulti(text=question_multi_data['text'],
-#                                        correct_answer=question_multi_data['correct_answer'], topic_id=['topic_id'])
-#         db.session.add(question_multi)
-#         for dummy in question_multi_data['dummies']:
-#             dummy_answer = DummyAnswers(answer=dummy, question_id=question_multi.id)
-#             db.session.add(dummy_answer)
-#         db.session.commit()
-#         return question_multi.get_parameters()
 
 
 @api.route('/api/dummy_answers')
@@ -257,11 +274,16 @@ class DummyAnswersAdd(Resource):
     @token_check
     def get(self, user_id):
         question_multi_id = flask.request.args.get('question_multi_id')
-        question_multi = QuestionMulti.query.filter_by(id=question_multi_id).first()
+        question_multi = QuestionMulti.query.filter_by(
+            id=question_multi_id).first()
         topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
-            dummies = [dummy.get_parameters() for dummy in question_multi.dummy_questions]
+            dummies = [
+                dummy.get_parameters()
+                for dummy in question_multi.dummy_questions
+            ]
             return dummies
         else:
             return {'message': 'Question does not belong to the user'}, 401
@@ -275,12 +297,15 @@ class DummyAnswersAdd(Resource):
     @token_check
     def post(self, user_id):
         dummy_answer_data = dummy_answer_parser.parse_args()
-        question_multi = QuestionMulti.query.filter_by(id=dummy_answer_data['question_id']).first()
+        question_multi = QuestionMulti.query.filter_by(
+            id=dummy_answer_data['question_id']).first()
         topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
-            dummy_answer = DummyAnswers(answer=dummy_answer_data['answer'],
-                                        question_id=dummy_answer_data['question_id'])
+            dummy_answer = DummyAnswers(
+                answer=dummy_answer_data['answer'],
+                question_id=dummy_answer_data['question_id'])
             db.session.add(dummy_answer)
             db.session.commit()
             return dummy_answer.get_parameters()
@@ -309,7 +334,8 @@ class VariableViewAdd(Resource):
             question_open = QuestionOpen.query.filter_by(
                 id=question_open_id).first()
             topic = Topic.query.filter_by(id=question_open.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is not None:
                 variables = [
                     variable.get_parameters()
@@ -320,10 +346,12 @@ class VariableViewAdd(Resource):
         elif question_tf_id is not None:
             question_tf = QuestionTF.query.filter_by(id=question_tf_id).first()
             topic = Topic.query.filter_by(id=question_tf.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is not None:
                 variables = [
-                    variable.get_parameters() for variable in question_tf.variables
+                    variable.get_parameters()
+                    for variable in question_tf.variables
                 ]
             else:
                 return {'message': 'Question does not belong to the user'}, 401
@@ -331,7 +359,8 @@ class VariableViewAdd(Resource):
             question_multi = QuestionMulti.query.filter_by(
                 id=question_multi_id).first()
             topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is not None:
                 variables = [
                     variable.get_parameters()
@@ -345,25 +374,27 @@ class VariableViewAdd(Resource):
         security='apikey',
         params={
             'values':
-                "The values the variable can take",
+            "The values the variable can take",
             'symbol':
-                "The symbol to identify the variable",
+            "The symbol to identify the variable",
             'type':
-                "The data type of the variable",
+            "The data type of the variable",
             'question_open_id':
-                "The id of the open question the variables belongs to (can be null)",
+            "The id of the open question the variables belongs to (can be null)",
             'question_tf_id':
-                "The id of the true or false question the variables belongs to (can be null)",
+            "The id of the true or false question the variables belongs to (can be null)",
             'question_multi_id':
-                "The id of the multiple choice question the variables belongs to (can be null)"
+            "The id of the multiple choice question the variables belongs to (can be null)"
         })
     @token_check
     def post(self, user_id):
         variable_data = variable_parser.parse_args()
         if variable_data.get('question_open_id') is not None:
-            question_open = QuestionOpen.query.filter_by(id=variable_data.get('question_open_id')).first()
+            question_open = QuestionOpen.query.filter_by(
+                id=variable_data.get('question_open_id')).first()
             topic = Topic.query.filter_by(id=question_open.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is not None:
                 variable = Variable(
                     values=variable_data['values'],
@@ -378,9 +409,11 @@ class VariableViewAdd(Resource):
             else:
                 return {'message': 'Question does not belong to the user'}, 401
         elif variable_data.get('question_tf_id') is not None:
-            question_tf = QuestionTF.query.filter_by(id=variable_data.get('question_tf_id')).first()
+            question_tf = QuestionTF.query.filter_by(
+                id=variable_data.get('question_tf_id')).first()
             topic = Topic.query.filter_by(id=question_tf.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is not None:
                 variable = Variable(
                     values=variable_data['values'],
@@ -395,9 +428,11 @@ class VariableViewAdd(Resource):
             else:
                 return {'message': 'Question does not belong to the user'}, 401
         else:
-            question_multi = QuestionMulti.query.filter_by(id=variable_data.get('question_multi_id')).first()
+            question_multi = QuestionMulti.query.filter_by(
+                id=variable_data.get('question_multi_id')).first()
             topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is not None:
                 variable = Variable(
                     values=variable_data['values'],
@@ -451,7 +486,10 @@ class TestQuestionsViewAdd(Resource):
         test_id = flask.request.args.get('test_id')
         test = Test.query.filter_by(id=test_id, user_id=user_id).first()
         if test is not None:
-            test_questions = [test_question.get_parameters() for test_question in test.questions]
+            test_questions = [
+                test_question.get_parameters()
+                for test_question in test.questions
+            ]
             return test_questions
         else:
             return {'message': 'Test does not belong to the user'}, 401
@@ -466,11 +504,14 @@ class TestQuestionsViewAdd(Resource):
     @token_check
     def post(self, user_id):
         test_questions_data = test_questions_parser.parse_args()
-        test = Test.query.filter_by(id=test_questions_data['test_id'], user_id=user_id).first()
+        test = Test.query.filter_by(
+            id=test_questions_data['test_id'], user_id=user_id).first()
         if test is None:
             return {'message': 'Test does not belong to the user'}, 401
-        topic = Topic.query.filter_by(id=test_questions_data['topic_id']).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        topic = Topic.query.filter_by(
+            id=test_questions_data['topic_id']).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is None:
             return {'message': 'Topic does not belong to the user'}, 401
         test_questions = TestQuestions(
@@ -544,7 +585,8 @@ class SubjectUpdate(Resource):
     @token_check
     def post(self, user_id):
         subject_data = subject_parser.parse_args()
-        subject = Subject.query.filter_by(id=subject_data['subject_id'], user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=subject_data['subject_id'], user_id=user_id).first()
         if subject is not None:
             subject.name = subject_data['name']
             db.session.commit()
@@ -565,7 +607,8 @@ class TopicUpdate(Resource):
     def post(self, user_id):
         topic_data = topic_parser.parse_args()
         topic = Topic.query.filter_by(id=topic_data['topic_id']).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             topic.name = topic_data['name']
             db.session.commit()
@@ -587,26 +630,30 @@ class VariableUpdate(Resource):
     @token_check
     def post(self, user_id):
         variable_data = variable_parser.parse_args()
-        variable = Variable.query.filter_by(id=variable_data['variable_id']).first()
+        variable = Variable.query.filter_by(
+            id=variable_data['variable_id']).first()
         if variable.question_open_id is not None:
             question_open = QuestionOpen.query.filter_by(
                 id=variable.question_open_id).first()
             topic = Topic.query.filter_by(id=question_open.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is None:
                 return {'message': 'Variable does not belong to the user'}, 401
         elif variable.question_tf_id is not None:
             question_tf = QuestionTF.query.filter_by(
                 id=variable.question_tf_id).first()
             topic = Topic.query.filter_by(id=question_tf.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is None:
                 return {'message': 'Variable does not belong to the user'}, 401
         elif variable.question_multi_id is not None:
             question_multi = QuestionMulti.query.filter_by(
                 id=variable.question_multi_id).first()
             topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is None:
                 return {'message': 'Variable does not belong to the user'}, 401
         variable.values = variable_data['values']
@@ -627,9 +674,11 @@ class QuestionOpenUpdate(Resource):
     @token_check
     def post(self, user_id):
         question_open_data = question_open_parser.parse_args()
-        question_open = QuestionOpen.query.filter_by(id=question_open_data['question_open_id']).first()
+        question_open = QuestionOpen.query.filter_by(
+            id=question_open_data['question_open_id']).first()
         topic = Topic.query.filter_by(id=question_open.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             question_open.text = question_open_data['text']
             db.session.commit()
@@ -650,9 +699,11 @@ class QuestionTFUpdate(Resource):
     @token_check
     def post(self, user_id):
         question_tf_data = question_tf_parser.parse_args()
-        question_tf = QuestionTF.query.filter_by(id=question_tf_data['question_tf_id']).first()
+        question_tf = QuestionTF.query.filter_by(
+            id=question_tf_data['question_tf_id']).first()
         topic = Topic.query.filter_by(id=question_tf.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             question_tf.text = question_tf_data['text']
             question_tf.expression = question_tf_data['expression']
@@ -677,12 +728,21 @@ class QuestionMultiUpdate(Resource):
     @token_check
     def post(self, user_id):
         question_multi_data = question_multi_parser.parse_args()
-        question_multi = QuestionMulti.query.filter_by(id=question_multi_data['question_multi_id']).first()
+        dummies_text = question_multi_data.get('dummies', [])
+        question_multi = QuestionMulti.query.filter_by(
+            id=question_multi_data['question_multi_id']).first()
         topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
+            for dummy in question_multi.dummy_questions:
+                db.session.delete(dummy)
             question_multi.text = question_multi_data['text']
-            question_multi.correct_answer = question_multi_data['correct_answer']
+            question_multi.correct_answer = question_multi_data[
+                'correct_answer']
+            for dummy_text in dummies_text:
+                db.session.add(
+                    DummyAnswers(answer=dummy, question_id=question_multi.id))
             db.session.commit()
             return question_multi.get_parameters()
         else:
@@ -700,10 +760,13 @@ class DummyAnswerUpdate(Resource):
     @token_check
     def post(self, user_id):
         dummy_answer_data = dummy_answer_parser.parse_args()
-        dummy_answer = DummyAnswers.query.filter_by(id=dummy_answer_data['dummy_answer_id']).first()
-        question_multi = QuestionMulti.query.filter_by(id=dummy_answer.question_id).first()
+        dummy_answer = DummyAnswers.query.filter_by(
+            id=dummy_answer_data['dummy_answer_id']).first()
+        question_multi = QuestionMulti.query.filter_by(
+            id=dummy_answer.question_id).first()
         topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             dummy_answer.answer = dummy_answer_data['answer']
             db.session.commit()
@@ -726,7 +789,8 @@ class TestUpdate(Resource):
     @token_check
     def post(self, user_id):
         test_data = test_parser.parse_args()
-        test = Test.query.filter_by(id=test_data['test_id'], user_id=user_id).first()
+        test = Test.query.filter_by(
+            id=test_data['test_id'], user_id=user_id).first()
         if test is not None:
             test.name = test_data['name']
             test.header = test_data['header']
@@ -749,12 +813,16 @@ class TestQuestionsUpdate(Resource):
     @token_check
     def post(self, user_id):
         test_questions_data = test_questions_parser.parse_args()
-        test_questions = TestQuestions.query.filter_by(id=test_questions_data['test_questions_id']).first()
-        test = Test.query.filter_by(id=test_questions.test_id, user_id=user_id).first()
+        test_questions = TestQuestions.query.filter_by(
+            id=test_questions_data['test_questions_id']).first()
+        test = Test.query.filter_by(
+            id=test_questions.test_id, user_id=user_id).first()
         if test is None:
             return {'message': 'Test Questions do not belong to the user'}, 401
-        topic = Topic.query.filter_by(id=test_questions_data['topic_id']).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        topic = Topic.query.filter_by(
+            id=test_questions_data['topic_id']).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is None:
             return {'message': 'Topic does not belong to the user'}, 401
         else:
@@ -784,7 +852,8 @@ class SubjectDelete(Resource):
     @token_check
     def post(self, user_id):
         subject_data = subject_parser.parse_args()
-        subject = Subject.query.filter_by(id=subject_data['subject_id'], user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=subject_data['subject_id'], user_id=user_id).first()
         if subject is not None:
             db.session.delete(subject)
             db.session.commit()
@@ -800,7 +869,8 @@ class TopicDelete(Resource):
     def post(self, user_id):
         topic_data = topic_parser.parse_args()
         topic = Topic.query.filter_by(id=topic_data['topic_id']).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             db.session.delete(topic)
             db.session.commit()
@@ -815,26 +885,30 @@ class VariableDelete(Resource):
     @token_check
     def post(self, user_id):
         variable_data = variable_parser.parse_args()
-        variable = Variable.query.filter_by(id=variable_data['variable_id']).first()
+        variable = Variable.query.filter_by(
+            id=variable_data['variable_id']).first()
         if variable.question_open_id is not None:
             question_open = QuestionOpen.query.filter_by(
                 id=variable.question_open_id).first()
             topic = Topic.query.filter_by(id=question_open.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is None:
                 return {'message': 'Variable does not belong to the user'}, 401
         elif variable.question_tf_id is not None:
             question_tf = QuestionTF.query.filter_by(
                 id=variable.question_tf_id).first()
             topic = Topic.query.filter_by(id=question_tf.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is None:
                 return {'message': 'Variable does not belong to the user'}, 401
         elif variable.question_multi_id is not None:
             question_multi = QuestionMulti.query.filter_by(
                 id=variable.question_multi_id).first()
             topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-            subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+            subject = Subject.query.filter_by(
+                id=topic.subject_id, user_id=user_id).first()
             if subject is None:
                 return {'message': 'Variable does not belong to the user'}, 401
         db.session.delete(variable)
@@ -850,9 +924,11 @@ class QuestionOpenDelete(Resource):
     @token_check
     def post(self, user_id):
         question_open_data = question_open_parser.parse_args()
-        question_open = QuestionOpen.query.filter_by(id=question_open_data['question_open_id']).first()
+        question_open = QuestionOpen.query.filter_by(
+            id=question_open_data['question_open_id']).first()
         topic = Topic.query.filter_by(id=question_open.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             db.session.delete(question_open)
             db.session.commit()
@@ -869,9 +945,11 @@ class QuestionTFDelete(Resource):
     @token_check
     def post(self, user_id):
         question_tf_data = question_tf_parser.parse_args()
-        question_tf = QuestionTF.query.filter_by(id=question_tf_data['question_tf_id']).first()
+        question_tf = QuestionTF.query.filter_by(
+            id=question_tf_data['question_tf_id']).first()
         topic = Topic.query.filter_by(id=question_tf.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             db.session.delete(question_tf)
             db.session.commit()
@@ -888,9 +966,11 @@ class QuestionMultiDelete(Resource):
     @token_check
     def post(self, user_id):
         question_multi_data = question_multi_parser.parse_args()
-        question_multi = QuestionMulti.query.filter_by(id=question_multi_data['question_multi_id']).first()
+        question_multi = QuestionMulti.query.filter_by(
+            id=question_multi_data['question_multi_id']).first()
         topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             db.session.delete(question_multi)
             db.session.commit()
@@ -907,10 +987,13 @@ class DummyAnswerDelete(Resource):
     @token_check
     def post(self, user_id):
         dummy_answer_data = dummy_answer_parser.parse_args()
-        dummy_answer = DummyAnswers.query.filter_by(id=dummy_answer_data['dummy_answer_id']).first()
-        question_multi = QuestionMulti.query.filter_by(id=dummy_answer.question_id).first()
+        dummy_answer = DummyAnswers.query.filter_by(
+            id=dummy_answer_data['dummy_answer_id']).first()
+        question_multi = QuestionMulti.query.filter_by(
+            id=dummy_answer.question_id).first()
         topic = Topic.query.filter_by(id=question_multi.topic_id).first()
-        subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        subject = Subject.query.filter_by(
+            id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
             db.session.delete(dummy_answer)
             db.session.commit()
@@ -925,7 +1008,8 @@ class TestDelete(Resource):
     @token_check
     def post(self, user_id):
         test_data = test_parser.parse_args()
-        test = Test.query.filter_by(id=test_data['test_id'], user_id=user_id).first()
+        test = Test.query.filter_by(
+            id=test_data['test_id'], user_id=user_id).first()
         if test is not None:
             db.session.delete(test)
             db.session.commit()
@@ -942,8 +1026,10 @@ class TestQuestionsDelete(Resource):
     @token_check
     def post(self, user_id):
         test_questions_data = test_questions_parser.parse_args()
-        test_questions = TestQuestions.query.filter_by(id=test_questions_data['test_questions_id']).first()
-        test = Test.query.filter_by(id=test_questions.test_id, user_id=user_id).first()
+        test_questions = TestQuestions.query.filter_by(
+            id=test_questions_data['test_questions_id']).first()
+        test = Test.query.filter_by(
+            id=test_questions.test_id, user_id=user_id).first()
         if test is not None:
             db.session.delete(test_questions)
             db.session.commit()
