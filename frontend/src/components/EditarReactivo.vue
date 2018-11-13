@@ -5,7 +5,7 @@
         </v-btn>
 <!-- Abierta -->
         <v-card v-if="questionOpenId !== undefined">
-        <v-card-title class="headline">Edita la pregunta abierta {{questionOpenId}}</v-card-title>
+        <v-card-title class="headline">Edita la pregunta abierta</v-card-title>
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="text"

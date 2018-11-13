@@ -40,14 +40,29 @@
         </v-container>
         <v-flex xs12>
             <v-text-field
-            label="Escribe la expresion de tu respuesta..."
+            label="Escribe la respuesta correcta"
             required
             v-model="respuestaOM"></v-text-field>
         </v-flex>
 
-        {{respuestaOM}}
+          <v-btn flat icon v-on:click="addDummyAnswer()">
+              <v-icon >add_circle</v-icon>
+          </v-btn>
+          <v-btn flat icon v-on:click="deleteDummyAnswer()">
+              <v-icon >add_circle</v-icon>
+          </v-btn>
 
-        <small>*indicates required field</small>
+          <div>
+            <ul>
+            <li
+              v-for="(respuesta, index) in dummyAnswers"
+              v-bind:key="index"
+              v-bind:title="dummyAnswers"
+              v-on:deleteDummyAnswer="todos.splice(index, 1)"
+            ></li>
+          </ul>
+          </div>
+
         </v-card-text>
  </v-card>
 
@@ -109,7 +124,10 @@ export default {
       tipoPregunta: undefined, // Guarda que tipo de pregunta es
       respuestaVoF: undefined, // Guarda si la pregunta tiene valor de V o F
       pregunta: undefined, // Guardo la pregunta
-      respuestaOM: undefined
+      respuestaOM: undefined,
+      dummyAnswerCont: 0,
+      dummyAnswers: [],
+      dummyAnswer: undefined
     }
   },
   props: {
@@ -118,14 +136,6 @@ export default {
     }
   },
   methods: {
-    addRow () {
-      this.listaRespuestaOM.push({
-        one: 'Hola'
-      })
-    },
-    deleteRow (index) {
-      this.listaRespuestaOM.splice(index, 1)
-    },
     saveOpenQuestion (pregunta, topicId, tipoPregunta) {
       let payload = [pregunta, topicId, tipoPregunta]
       this.$store.dispatch('addQuestion', payload)
@@ -158,6 +168,16 @@ export default {
           console.log('Error saveOMQuestion')
           console.log(error)
         })
+    },
+    addDummyAnswer () {
+      // this.dummyAnswerCont++
+      // console.log(this.dummyAnswerCont)
+      this.dummyAnswers.push(this.dummyAnswer)
+      this.dummyAnswer = undefined
+    },
+    deleteDummyAnswer () {
+      this.dummyAnswerCont--
+      console.log(this.dummyAnswerCont)
     }
   }
 }

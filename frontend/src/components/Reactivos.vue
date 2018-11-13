@@ -83,13 +83,13 @@
   <v-container grid-list-md text-xs-center>
       <v-layout row wrap>
       <v-flex xs12>
-        <v-card flat>
-          <v-card-text class="px-0">Preguntas</v-card-text>
+        <v-card flat v-if="selectedTopic !== undefined">
+          <h2>Preguntas</h2>
         </v-card>
       </v-flex>
 <!--Elaboracion de preguntas-->
       <v-flex xs2>
-        <v-card
+        <v-card flat
         v-if="selectedTopic !== undefined">
           <CrearReactivo :topicId="selectedTopic"></CrearReactivo>
         </v-card>
@@ -100,7 +100,7 @@
         :key="pregunta.question_open_id">
 
         <v-flex xs9>
-        <v-card>
+        <v-card flat >
           <v-text-field
             :value="pregunta.text"
             :label="pregunta.question_open_id"
@@ -113,7 +113,7 @@
         </v-flex>
 
         <v-flex xs3>
-            <v-card>
+            <v-card flat>
             <EditarReactivo
             :questionOpenId="pregunta.question_open_id"
             :questionTFId="pregunta.question_tf_id"
@@ -272,7 +272,11 @@ export default {
       return this.$store.getters.topicList
     },
     Preguntas () {
-      return this.$store.getters.questionList
+      if (this.selectedTopic !== undefined) {
+        return this.$store.getters.questionList
+      } else {
+        return 0
+      }
     }
     /*
     filteredSubjects () {
