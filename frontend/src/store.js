@@ -4,7 +4,7 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
-const userServiceURL = 'http://localhost:5000'
+const userServiceURL = process.env.ROOT_API
 const UserApi = axios.create({
   baseURL: userServiceURL,
   timeout: 5000,
