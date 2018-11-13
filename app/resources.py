@@ -679,6 +679,15 @@ class QuestionOpenUpdate(Resource):
         subject = Subject.query.filter_by(
             id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
+            for variable in question_open.variables:
+                db.session.delete(variable)
+            for variable in question_open_data.get('variables', []):
+                new_variable = Variable(
+                    values=variable['values'],
+                    symbol=variable['symbol'],
+                    type=variable['type'],
+                    question_open_id=question_open.id)
+                db.session.add(new_variable)
             question_open.text = question_open_data['text']
             db.session.commit()
             return question_open.get_parameters()
@@ -704,6 +713,15 @@ class QuestionTFUpdate(Resource):
         subject = Subject.query.filter_by(
             id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
+            for variable in question_tf.variables:
+                db.session.delete(variable)
+            for variable in question_tf_data.get('variables', []):
+                new_variable = Variable(
+                    values=variable['values'],
+                    symbol=variable['symbol'],
+                    type=variable['type'],
+                    question_tf_id=question_tf.id)
+                db.session.add(new_variable)
             question_tf.text = question_tf_data['text']
             question_tf.expression = question_tf_data['expression']
             db.session.commit()
@@ -734,6 +752,15 @@ class QuestionMultiUpdate(Resource):
         subject = Subject.query.filter_by(
             id=topic.subject_id, user_id=user_id).first()
         if subject is not None:
+            for variable in question_multi.variables:
+                db.session.delete(variable)
+            for variable in question_multi_data.get('variables', []):
+                new_variable = Variable(
+                    values=variable['values'],
+                    symbol=variable['symbol'],
+                    type=variable['type'],
+                    question_multi_id=question_multi.id)
+                db.session.add(new_variable)
             for dummy in question_multi.dummy_questions:
                 db.session.delete(dummy)
             question_multi.text = question_multi_data['text']
