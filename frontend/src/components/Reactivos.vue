@@ -89,7 +89,8 @@
       </v-flex>
 <!--Elaboracion de preguntas-->
       <v-flex xs2>
-        <v-card>
+        <v-card
+        v-if="selectedTopic !== undefined">
           <CrearReactivo :topicId="selectedTopic"></CrearReactivo>
         </v-card>
       </v-flex>
@@ -175,7 +176,7 @@ export default {
     // Temas: [ ],
     Reactivos: ['Que onda?'],
     selectedSubject: [],
-    selectedTopic: [],
+    selectedTopic: undefined,
     selectedQuestion: [],
     readOnly: true
   }),

@@ -4,6 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import Reactivos from '@/components/Reactivos'
 import Login from '@/components/Login'
 import Examenes from '@/components/Exams'
+import Profile from '@/components/Profile'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile
     }
   ]
 })

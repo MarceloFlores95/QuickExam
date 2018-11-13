@@ -8,7 +8,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -120,3 +119,4 @@ evaluator/questionParseTab.py
 evaluator/booleanParseTab.py
 .idea/
 pdfs/
+node_modules/
