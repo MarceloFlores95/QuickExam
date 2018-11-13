@@ -214,11 +214,16 @@ class QuestionMultiAdd(Resource):
         question_multi_data = question_multi_parser.parse_args()
         topic = Topic.query.filter_by(id=question_multi_data['topic_id']).first()
         subject = Subject.query.filter_by(id=topic.subject_id, user_id=user_id).first()
+        dummies = question_multi_data['dummies']
         if subject is not None:
             question_multi = QuestionMulti(text=question_multi_data['text'],
                                            correct_answer=question_multi_data['correct_answer'],
                                            topic_id=question_multi_data['topic_id'])
             db.session.add(question_multi)
+            db.session.commit()
+            for dummy_text in dummies:
+                dummy = DummyAnswers(answer=dummy_text, question_id=question_multi.id)
+                db.session.add(dummy)
             db.session.commit()
             return question_multi.get_parameters()
         else:
