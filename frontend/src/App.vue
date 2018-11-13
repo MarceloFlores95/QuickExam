@@ -8,12 +8,10 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn icon>
-        <v-icon>favorite</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>more_vert</v-icon>
+      <v-btn icon
+      v-if="userToken !== undefined"
+      router-link to= "/profile">
+        <v-icon>perm_identity</v-icon>
       </v-btn>
     </v-toolbar>
     <v-container grid-list-md text-xs-center>
@@ -28,7 +26,17 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {
+      // userToken: undefined
+    }
+  },
+  computed: {
+    userToken () {
+      return this.$store.getters.userToken
+    }
+  }
 }
 </script>
 

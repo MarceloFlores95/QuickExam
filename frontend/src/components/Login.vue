@@ -23,8 +23,8 @@
         type="password"
       ></v-text-field>
 
-      <v-btn>Login </v-btn>
-      <v-btn v-on:click="userLogin(user)">Register </v-btn>
+      <v-btn v-on:click="userLogin(user)">Login </v-btn>
+      <v-btn v-on:click="userRegister(user)">Register </v-btn>
     </v-card>
   </div>
   </v-container>
@@ -67,8 +67,32 @@ export default {
 
   },
   methods: {
-    userLogin: function (payload) {
+    userRegister: function (payload) {
       this.$store.dispatch('userRegister', payload)
+        .then((response) => {
+          console.log(this.$store.state.user.username)
+          console.log(this.$store.state.user.password)
+          console.log(this.$store.state.user.userToken)
+          this.$router.push({name: 'Reactivos', params: { }})
+        })
+        .catch((error) => {
+          console.log('Error')
+          console.log(error)
+        })
+    },
+    userLogin: function (payload) {
+      this.$store.dispatch('userLogin', payload)
+        .then((response) => {
+          // console.log(response)
+          // console.log(this.$store.state.user.username)
+          // console.log(this.$store.state.user.password)
+          // console.log(this.$store.state.user.userToken)
+          this.$router.push({name: 'Reactivos', params: { }})
+        })
+        .catch((error) => {
+          console.log('Error')
+          console.log(error)
+        })
     }
   }
 }
