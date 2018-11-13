@@ -255,7 +255,6 @@ class QuestionMultiAdd(Resource):
                     question_multi_id=question_multi.id)
                 print(new_variable)
                 db.session.add(new_variable)
-            db.session.commit()
             for dummy_text in dummies:
                 dummy = DummyAnswers(
                     answer=dummy_text, question_id=question_multi.id)
