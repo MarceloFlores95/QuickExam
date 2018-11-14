@@ -746,7 +746,7 @@ export const store = new Vuex.Store({
         })
           .then((response) => {
             const link = document.createElement('a')
-            link.href = 'http://localhost:5000/api/generate_tests?test_id='+payload.toString()
+            link.href = userServiceURL+'/api/generate_tests?test_id='+payload.toString()
             document.body.appendChild(link)
             link.click()
             resolve(response)
