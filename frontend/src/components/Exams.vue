@@ -78,7 +78,7 @@
        <v-container fluid grid list -md>
          <v-text-field
             :value="name"
-            label="Test de Prueba"
+            label="Nombre de test"
             solo
             v-model="name"
           ></v-text-field>
@@ -128,7 +128,8 @@
           v-model="cantidadSeleccionada"
         ></v-overflow-btn>
 
-        <p>Tipos</p>
+        <v-flex xs12 sm12>
+        <p>Tipos de examen</p>
         <v-overflow-btn
           :items="cantidad"
           label="Cantidad"
@@ -136,6 +137,7 @@
           item-value="text"
           v-model="tipos"
         ></v-overflow-btn>
+        </v-flex >
 
         <v-btn @click="addTopicQuestion(selectedTopic, cantidadSeleccionada)">Agregar topico</v-btn>
         <v-btn @click="deleteTopicQuestion">Borrar topico</v-btn>
