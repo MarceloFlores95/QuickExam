@@ -4,7 +4,7 @@
             Agregar variable
         </v-btn>
         <v-card>
-        <v-card-title class="headline">Añade un nuevo tema</v-card-title>
+        <v-card-title class="headline">Añade una nueva variable</v-card-title>
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="value"
