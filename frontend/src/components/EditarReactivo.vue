@@ -13,8 +13,6 @@
             ></v-text-field>
         </v-flex>
 
-        {{Respuesta}}
-
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="dialog = false">Cancelar</v-btn>
@@ -58,6 +56,7 @@
                 label="Respuesta Correcta"
             ></v-text-field>
         </v-flex>
+        <CrearVariable @clicked="guardoArreglo"></CrearVariable>
 
         <v-card-actions>
             <v-spacer></v-spacer>
@@ -70,12 +69,14 @@
 </template>
 
 <script>
+import CrearVariable from './CrearVariable.vue'
 export default {
   data () {
     return {
       dialog: false,
       pregunta: undefined,
-      respuesta: undefined
+      respuesta: undefined,
+      variables: []
     }
   },
   props: {
@@ -91,6 +92,9 @@ export default {
     questionOMId: {
       required: true
     }
+  },
+  components: {
+    'CrearVariable': CrearVariable
   },
   methods: {
     editOpenQuestion: function (questionId, text, topicId) {
@@ -120,7 +124,7 @@ export default {
         })
     },
     editOMQuestion: function (questionId, text, topicId, correctAnswer) {
-      let payload = [questionId, text, topicId, correctAnswer]
+      let payload = [questionId, text, topicId, correctAnswer, this.variables]
       console.log(payload)
       this.$store.dispatch('editOMQuestion', payload)
         .then((response) => {
@@ -131,16 +135,31 @@ export default {
           console.log('Error de editOMQuestion')
           console.log(error)
         })
+    },
+    guardoArreglo (value) {
+      this.variables = this.variables.concat(value)
+      // console.log('Guardo Arreglo')
+      // console.log(this.variables)
     }
   },
   computed: {
     Respuesta () {
       var Respuesta = this.$store.getters.questionList.OpenQuestion
-      /*
-      Respuesta = Respuesta.filter((questionID) => {
-        return questionID.question_tf_id !== undefined
-      })
-      */
+      if (this.questionOMId !== null) {
+        Respuesta = Respuesta.filter((questionID) => {
+          return questionID.question_multi_id === this.questionOMId
+        })
+      }
+      if (this.questionOpenId !== null) {
+        Respuesta = Respuesta.filter((questionID) => {
+          return questionID.question_open_id === this.questionOpenId
+        })
+      }
+      if (this.questionTFId !== null) {
+        Respuesta = Respuesta.filter((questionID) => {
+          return questionID.question_tf_id === this.questionTFId
+        })
+      }
       return Respuesta
     }
   }

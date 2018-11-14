@@ -10,12 +10,10 @@
                 v-model="value"
                 label="Valor"
             ></v-text-field>
-            {{value}}
             <v-text-field
                 v-model="symbol"
                 label="Simbolo"
             ></v-text-field>
-            {{symbol}}
             <v-overflow-btn
               :items="tipos"
               label="Tipos"
@@ -23,7 +21,6 @@
               target="#dropdown-example"
               v-model="tipo"
             ></v-overflow-btn>
-            {{tipo}}
         </v-flex>
         <v-card-actions>
             <v-spacer></v-spacer>

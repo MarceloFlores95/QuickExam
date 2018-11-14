@@ -31,18 +31,7 @@
 </template>
 
 <script>
-/*
-    <v-text-field
-        v-model="password"
-        :rules="[rules.password, rules.length(6)]"
-        box
-        color="deep-purple"
-        counter="6"
-        label="Password"
-        style="min-height: 96px"
-        type="password"
-      ></v-text-field>
-*/
+
 export default {
   name: 'UserLogin',
   data () {
@@ -53,7 +42,8 @@ export default {
       },
       message: 'UserLogin',
       dialog: false,
-      isLoading: false,
+      isLoading: false
+      /*
       rules: {
         email: v => (v || '').match(/@/) || 'Please enter a valid email',
         length: len => v => (v || '').length >= len || `Invalid character length, required ${len}`,
@@ -61,6 +51,7 @@ export default {
           'Password must contain an upper case letter, a numeric character, and a special character',
         required: v => !!v || 'This field is required'
       }
+      */
     }
   },
   components: {

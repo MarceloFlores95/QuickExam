@@ -24,11 +24,29 @@
     </v-flex>
 </v-layout>
 
-<!---Espacio-->
+<!---Espacio
  <v-container grid-list-md text-xs-center>
    <v-flex v-for="i in 1" :key="`1${i}`" xs1>
     </v-flex>
-</v-container>
+</v-container>-->
+
+<!---Test-->
+<v-flex xs12 d-flex>
+  <v-card flat>
+    <v-select
+      :items="Test"
+      single-line auto
+      label="Test"
+      v-model="selectedTest"
+    ></v-select>
+  </v-card>
+</v-flex>
+
+<v-flex xs12 d-flex>
+  <v-card v-if="selectedTest!==undefined" flat>
+    <v-btn @click="convertPDF(selectedTest)">Convertir a PDF</v-btn>
+  </v-card>
+</v-flex>
 
 <!--Boton de mas-->
 <div class="text-xs-center">
@@ -66,9 +84,6 @@
         ></v-textarea>
        </v-container>
 
-<v-btn @click="addTopicQuestion(selectedTopic,cantidadSeleccionada)">Agregar topico</v-btn>
-<v-btn @click="deleteTopicQuestion">Borrar topico</v-btn>
-
   <v-container id="dropdown-example" grid-list-xl>
     <v-layout row wrap>
       <v-flex xs12 sm4>
@@ -96,7 +111,7 @@
       </v-flex>
 
       <v-flex xs12 sm4>
-        <p>Cantidad</p>
+        <p>Cantidad de preguntas</p>
         <v-overflow-btn
           :items="cantidad"
           label="Cantidad"
@@ -104,6 +119,18 @@
           item-value="text"
           v-model="cantidadSeleccionada"
         ></v-overflow-btn>
+
+        <p>Tipos</p>
+        <v-overflow-btn
+          :items="cantidad"
+          label="Cantidad"
+          target="#dropdown-example"
+          item-value="text"
+          v-model="tipos"
+        ></v-overflow-btn>
+
+        <v-btn @click="addTopicQuestion(selectedTopic, cantidadSeleccionada)">Agregar topico</v-btn>
+        <v-btn @click="deleteTopicQuestion">Borrar topico</v-btn>
 
       </v-flex>
     </v-layout>
@@ -114,7 +141,7 @@
            <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn flat color="primary" @click="dialog = false">Cancelar</v-btn>
-              <v-btn flat color="primary" @click="addTest(name,header,cantidadSeleccionada,selectedTopic)">Aceptar</v-btn>
+              <v-btn flat color="primary" @click="addTest(name, header, tipos)">Aceptar</v-btn>
             </v-card-actions>
 
       </v-card>
@@ -146,12 +173,12 @@ export default {
     cantidad: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
     arrayTopicQuestions: [],
     variableTopicQuestions: undefined,
-    cantidadSeleccionada: undefined
+    cantidadSeleccionada: undefined,
+    tipos: undefined,
+    selectedTest: undefined
   }),
   methods: {
     refreshTopicList: function () {
-      // console.log('Ejecuto topiclist')
-      // console.log(this.selectedSubject)
       this.$store.dispatch('changeTopicList', this.selectedSubject)
         .then(() => {
           // this.Temas = this.$store.getters.topicList
@@ -160,37 +187,49 @@ export default {
           console.log(error)
         })
     },
-    addTest: function (name, header, cantidadSeleccionada, selectedTopic) {
-      let payload = [name, header, cantidadSeleccionada, selectedTopic]
-      console.log(payload)
+    addTest: function (name, header, tipos) {
+      let payload = [ name, header, tipos, this.arrayTopicQuestions ]
+      // console.log(payload)
+      this.$store.dispatch('addtest', payload)
+        .then((response) => {
+          //
+          this.dialog = false
+          this.arrayTopicQuestions = []
+        })
+        .catch((error) => {
+          console.log('Error')
+          console.log(error)
+        })
     },
-    addTopicQuestion (questionId) {
-      this.arrayTopicQuestions.push(this.variableTopicQuestions)
-      let payload = [this.variableTopicQuestions, questionId]
-      console.log(payload)
+    addTopicQuestion (selectedTopic, cantidadSeleccionada) {
+      let ArrayTopic = [selectedTopic, cantidadSeleccionada]
+      this.arrayTopicQuestions.push(ArrayTopic)
+      ArrayTopic = []
+      console.log(this.arrayTopicQuestions)
+      console.log(this.ArrayTopic)
     },
     deleteTopicQuestion (questionId) {
       this.arrayTopicQuestions.splice(this.variableTopicQuestions, 1)
+    },
+    convertPDF (selectedTest) {
+      console.log(selectedTest)
+      this.$store.dispatch('convertPDF', selectedTest)
+        .then((response) => {
+          //
+        })
+        .catch((error) => {
+          console.log('Error')
+          console.log(error)
+        })
     }
   },
   created () {
     this.userToken = this.$store.getters.userToken
-    // this.refreshSubjectList()
-    this.userLogin(this.userToken)
-    this.$store.dispatch('changeSubjectList')
-      .then(() => {
-        // this.Materias = this.$store.getters.subjectList
-      }).catch((error) => {
-        console.log('Error')
-        console.log(error)
-      })
   },
   mounted () {
     this.userToken = this.$store.getters.userToken
     this.Temas = this.$store.getters.topicList
-    this.refreshSubjectList()
     this.refreshTopicList()
-    this.refreshQuestionList()
   },
   computed: {
     Materias () {
@@ -198,6 +237,12 @@ export default {
     },
     Temas () {
       return this.$store.getters.topicList
+    },
+    Test () {
+      return this.$store.getters.testList
+    },
+    Test2 () {
+      return this.$store.getters.testList
     },
     Preguntas () {
       if (this.selectedTopic !== undefined) {
