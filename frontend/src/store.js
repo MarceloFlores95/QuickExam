@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+const fileDownload = require('js-file-download')
 
 Vue.use(Vuex)
 
@@ -736,13 +737,20 @@ export const store = new Vuex.Store({
     convertPDF: (context, payload) => {
       return new Promise((resolve, reject) => {
         UserApi.post('/api/generate_tests', {
-          test_id: payload
+
         }, {
           headers: {'X-API-KEY': context.getters.userToken
+                   },
+          params: {
+            'test_id': payload
           }
         })
           .then((response) => {
-            console.log('Response despues del get')
+            let blob = new Blob([response], { type:"application/pdf"})
+            let link = document.createElement('a')
+            link.href = window.URL.createObjectURL(blob)
+            link.download = 'Examen generado'
+            link.click()
             resolve()
           })
           .catch((error) => {
