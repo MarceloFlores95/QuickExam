@@ -224,7 +224,7 @@ export default {
     refreshQuestionList: function () {
       this.$store.dispatch('changeQuestionList', this.selectedTopic)
         .then(() => {
-          // Popo
+          //
         }).catch((error) => {
           console.log('Error')
           console.log(error)
@@ -248,10 +248,17 @@ export default {
   },
   created () {
     this.userToken = this.$store.getters.userToken
-    // this.refreshSubjectList()
     this.userLogin(this.userToken)
     this.$store.dispatch('changeSubjectList')
       .then(() => {
+        // this.Materias = this.$store.getters.subjectList
+      }).catch((error) => {
+        console.log('Error')
+        console.log(error)
+      })
+    this.$store.dispatch('changeTestList')
+      .then(() => {
+        console.log('Lo ejectuo')
         // this.Materias = this.$store.getters.subjectList
       }).catch((error) => {
         console.log('Error')

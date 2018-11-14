@@ -26,6 +26,9 @@ export const store = new Vuex.Store({
     topic: [],
     topicList: '',
     questionList: {
+    },
+    test: '',
+    testList: {
     }
   },
   getters: {
@@ -55,6 +58,9 @@ export const store = new Vuex.Store({
     },
     questionList: state => {
       return state.questionList
+    },
+    testList: state => {
+      return state.testList
     }
   },
   mutations: {
@@ -93,6 +99,9 @@ export const store = new Vuex.Store({
     },
     changeTFQuestionList (state, payload) {
       Vue.set(state.questionList, 'TFQuestion', payload)
+    },
+    changeTestList (state, payload) {
+      Vue.set(state, 'testList', payload)
     }
   },
   actions: {
@@ -480,7 +489,8 @@ export const store = new Vuex.Store({
       return new Promise((resolve, reject) => {
         UserApi.post('/api/question/tf', {
           text: payload[0],
-          expression: payload[3]
+          expression: payload[3],
+          variables: payload[4]
         }, {
           headers: { 'X-API-KEY': context.getters.userToken
           },
@@ -578,7 +588,8 @@ export const store = new Vuex.Store({
         UserApi.post('/api/question/multi', {
           text: payload[0],
           correct_answer: payload[3],
-          dummies: payload[4]
+          dummies: payload[4],
+          variables: payload[5]
         }, {
           headers: { 'X-API-KEY': context.getters.userToken
           },
@@ -613,7 +624,9 @@ export const store = new Vuex.Store({
       return new Promise((resolve, reject) => {
         UserApi.post('/api/update/question/multi', {
           text: payload[1],
-          correct_answer: payload[3]
+          correct_answer: payload[3],
+          variables: payload[4],
+          dummies: payload[5]
         }, {
           headers: {'X-API-KEY': context.getters.userToken
           },
@@ -673,26 +686,23 @@ export const store = new Vuex.Store({
     addtest: (context, payload) => {
       return new Promise((resolve, reject) => {
         UserApi.post('/api/test', {
-          text: payload[0],
-          correct_answer: payload[3],
-          dummies: payload[4]
+          name: payload[0],
+          header: payload[1],
+          count: payload[2],
+          questions: payload[3]
         }, {
           headers: { 'X-API-KEY': context.getters.userToken
-          },
-          params: {
-            topic_id: payload[1]
           }
         })
           .then((response) => {
             UserApi.get('/api/test', {
               headers: {'X-API-KEY': context.getters.userToken
-              },
-              params: {topic_id: payload[1]}
+              }
             })
               .then((response) => {
                 console.log('Response despues del get')
                 console.log(response)
-                context.commit('changeQuestionList', response.data)
+                context.commit('changeTestList', response.data)
                 resolve(response)
               })
               .catch((error) => {
@@ -700,7 +710,43 @@ export const store = new Vuex.Store({
                 console.log(error)
               })
           }).catch((error) => {
-            console.log('Error de AddOmQuestion')
+            console.log('Error de addtest')
+            console.log(error)
+          })
+      })
+    },
+    changeTestList: (context, payload) => {
+      return new Promise((resolve, reject) => {
+        UserApi.get('/api/test', {
+          headers: {'X-API-KEY': context.getters.userToken
+          }
+        })
+          .then((response) => {
+            console.log('Response despues del get')
+            console.log(response)
+            context.commit('changeTestList', response.data)
+            resolve()
+          })
+          .catch((error) => {
+            console.log('Error de commit')
+            console.log(error)
+          })
+      })
+    },
+    convertPDF: (context, payload) => {
+      return new Promise((resolve, reject) => {
+        UserApi.post('/api/generate_tests', {
+          test_id: payload
+        }, {
+          headers: {'X-API-KEY': context.getters.userToken
+          }
+        })
+          .then((response) => {
+            console.log('Response despues del get')
+            resolve()
+          })
+          .catch((error) => {
+            console.log('Error de commit')
             console.log(error)
           })
       })

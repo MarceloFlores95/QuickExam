@@ -18,7 +18,6 @@
                 <v-radio label="Verdadero o Falso" value="Verdadero o Falso"></v-radio>
                 <v-radio label="Abierta" value="Abierta"></v-radio>
             </v-radio-group>
-            {{tipoPregunta}}
           </v-flex>
         </v-layout>
       </v-container>
@@ -64,7 +63,6 @@
         ></v-text-field>
         </div>
         <CrearVariable @clicked="guardoArreglo"></CrearVariable>
-        {{dummyAnswers}}
 
         </v-card-text>
  </v-card>
@@ -88,7 +86,6 @@
                     v-model="respuestaVoF"></v-text-field>
                 </v-flex>
               <CrearVariable @clicked="guardoArreglo"></CrearVariable>
-            {{respuestaVoF}}
             <small>*indicates required field</small>
             </v-card-text>
  </v-card>
@@ -162,7 +159,7 @@ export default {
         })
     },
     saveTFQuestion (pregunta, topicId, tipoPregunta, respuestaVoF) {
-      let payload = [pregunta, topicId, tipoPregunta, respuestaVoF]
+      let payload = [pregunta, topicId, tipoPregunta, respuestaVoF, this.variables]
       this.$store.dispatch('addTFQuestion', payload)
         .then((response) => {
           this.dialog = false
@@ -173,7 +170,7 @@ export default {
         })
     },
     saveOMQuestion (pregunta, topicId, tipoPregunta, respuestaOM, dummyAnswers) {
-      let payload = [pregunta, topicId, tipoPregunta, respuestaOM, dummyAnswers]
+      let payload = [pregunta, topicId, tipoPregunta, respuestaOM, dummyAnswers, this.variables]
       this.$store.dispatch('addOMQuestion', payload)
         .then((response) => {
           this.dialog = false

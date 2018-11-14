@@ -46,11 +46,6 @@ export default {
           console.log('Error')
           console.log(error)
         })
-    },
-    showSubjectList: function () {
-      console.log(this.$store.getters.subjectList)
-      console.log(this.filteredSubject)
-      console.log(this.subjectId)
     }
   },
   computed: {
