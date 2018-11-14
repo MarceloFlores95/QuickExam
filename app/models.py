@@ -226,6 +226,7 @@ class DummyAnswers(db.Model):
 
 class Test(db.Model):
     __tablename__ = 'Test'
+    __table_args__ = (db.UniqueConstraint('name', 'user_id'), )
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     header = db.Column(db.String(10000), nullable=False)
