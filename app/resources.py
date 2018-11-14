@@ -174,9 +174,9 @@ class QuestionOpenAdd(Resource):
             db.session.commit()
             for variable in variables:
                 new_variable = Variable(
-                    values=variable['values'],
-                    symbol=variable['symbol'],
-                    type=variable['type'],
+                    values=variable[0],
+                    symbol=variable[1],
+                    type=variable[2],
                     question_open_id=question_open.id)
                 db.session.add(new_variable)
             db.session.commit()
@@ -210,9 +210,9 @@ class QuestionTFAdd(Resource):
             db.session.commit()
             for variable in variables:
                 new_variable = Variable(
-                    values=variable['values'],
-                    symbol=variable['symbol'],
-                    type=variable['type'],
+                    values=variable[0],
+                    symbol=variable[1],
+                    type=variable[2],
                     question_tf_id=question_tf.id)
                 db.session.add(new_variable)
             db.session.commit()
@@ -249,9 +249,9 @@ class QuestionMultiAdd(Resource):
             db.session.commit()
             for variable in variables:
                 new_variable = Variable(
-                    values=variable['values'],
-                    symbol=variable['symbol'],
-                    type=variable['type'],
+                    values=variable[0],
+                    symbol=variable[1],
+                    type=variable[2],
                     question_multi_id=question_multi.id)
                 print(new_variable)
                 db.session.add(new_variable)
