@@ -135,6 +135,13 @@ export const store = new Vuex.Store({
           })
       })
     },
+    logout: (context, payload) => {
+      console.log(payload)
+      context.commit('saveToken', payload)
+      context.commit('saveUsername', payload)
+      context.commit('savePassword', payload)
+      context.commit('changeSession', false)
+    },
     addSubject: (context, payload) => {
       return new Promise((resolve, reject) => {
         UserApi.post('/api/subject', {
@@ -358,7 +365,8 @@ export const store = new Vuex.Store({
       console.log(payload)
       return new Promise((resolve, reject) => {
         UserApi.post('/api/question/open', {
-          text: payload[0]
+          text: payload[0],
+          variables: payload[3]
         }, {
           headers: { 'X-API-KEY': context.getters.userToken
           },
@@ -569,7 +577,8 @@ export const store = new Vuex.Store({
       return new Promise((resolve, reject) => {
         UserApi.post('/api/question/multi', {
           text: payload[0],
-          correct_answer: payload[3]
+          correct_answer: payload[3],
+          dummies: payload[4]
         }, {
           headers: { 'X-API-KEY': context.getters.userToken
           },
@@ -657,6 +666,41 @@ export const store = new Vuex.Store({
           })
           .catch((error) => {
             console.log('Error')
+            console.log(error)
+          })
+      })
+    },
+    addtest: (context, payload) => {
+      return new Promise((resolve, reject) => {
+        UserApi.post('/api/test', {
+          text: payload[0],
+          correct_answer: payload[3],
+          dummies: payload[4]
+        }, {
+          headers: { 'X-API-KEY': context.getters.userToken
+          },
+          params: {
+            topic_id: payload[1]
+          }
+        })
+          .then((response) => {
+            UserApi.get('/api/test', {
+              headers: {'X-API-KEY': context.getters.userToken
+              },
+              params: {topic_id: payload[1]}
+            })
+              .then((response) => {
+                console.log('Response despues del get')
+                console.log(response)
+                context.commit('changeQuestionList', response.data)
+                resolve(response)
+              })
+              .catch((error) => {
+                console.log('Error de commit')
+                console.log(error)
+              })
+          }).catch((error) => {
+            console.log('Error de AddOmQuestion')
             console.log(error)
           })
       })

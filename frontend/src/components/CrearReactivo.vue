@@ -1,5 +1,5 @@
 <template>
-            <v-dialog v-model="dialog" persistent max-width="600px">
+            <v-dialog v-model="dialog" persistent max-width="800px">
         <v-btn slot="activator" color="black" dark flat icon>
             <v-icon>add_box</v-icon>
         </v-btn>
@@ -45,23 +45,26 @@
             v-model="respuestaOM"></v-text-field>
         </v-flex>
 
-          <v-btn flat icon v-on:click="addDummyAnswer()">
-              <v-icon >add_circle</v-icon>
-          </v-btn>
-          <v-btn flat icon v-on:click="deleteDummyAnswer()">
-              <v-icon >add_circle</v-icon>
-          </v-btn>
+        <v-btn flat icon v-on:click="addDummyAnswer(questionOMId)">
+            <v-icon >add_circle</v-icon>
+        </v-btn>
+        <v-btn flat icon v-on:click="deleteDummyAnswer(questionOMId)">
+            <v-icon >delete_forever</v-icon>
+        </v-btn>
 
-          <div>
-            <ul>
-            <li
-              v-for="(respuesta, index) in dummyAnswers"
-              v-bind:key="index"
-              v-bind:title="dummyAnswers"
-              v-on:deleteDummyAnswer="todos.splice(index, 1)"
-            ></li>
-          </ul>
-          </div>
+        <div
+            v-for="(respuesta, index) in dummyAnswers"
+            v-bind:key="index"
+            v-bind:title="dummyAnswers"
+          >
+        <v-text-field
+          label="Agrega respuesta incorrecta"
+          solo
+          v-model="dummyAnswers[index]"
+        ></v-text-field>
+        </div>
+        <CrearVariable @clicked="guardoArreglo"></CrearVariable>
+        {{dummyAnswers}}
 
         </v-card-text>
  </v-card>
@@ -84,6 +87,7 @@
                     required
                     v-model="respuestaVoF"></v-text-field>
                 </v-flex>
+              <CrearVariable @clicked="guardoArreglo"></CrearVariable>
             {{respuestaVoF}}
             <small>*indicates required field</small>
             </v-card-text>
@@ -99,6 +103,7 @@
                     required
                     v-model="pregunta"></v-text-field>
                 </v-flex>
+              <CrearVariable @clicked="guardoArreglo"></CrearVariable>
                 </v-layout>
             </v-container>
             </v-card-text>
@@ -110,12 +115,13 @@
             <v-btn color="green darken-1" flat @click.native="dialog = false">Cancelar</v-btn>
             <v-btn color="green darken-1" flat v-on:click="saveOpenQuestion(pregunta, topicId, tipoPregunta)" v-if="tipoPregunta==='Abierta'">Guardar</v-btn>
             <v-btn color="green darken-1" flat v-on:click="saveTFQuestion(pregunta, topicId, tipoPregunta, respuestaVoF)" v-if="tipoPregunta==='Verdadero o Falso'">Guardar</v-btn>
-            <v-btn color="green darken-1" flat v-on:click="saveOMQuestion(pregunta, topicId, tipoPregunta, respuestaOM)" v-if="tipoPregunta==='Opcion Multiple'">Guardar</v-btn>
+            <v-btn color="green darken-1" flat v-on:click="saveOMQuestion(pregunta, topicId, tipoPregunta, respuestaOM, dummyAnswers)" v-if="tipoPregunta==='Opcion Multiple'">Guardar</v-btn>
         </v-card-actions>
  </v-card>
         </v-dialog>
 </template>
 <script>
+import CrearVariable from './CrearVariable.vue'
 export default {
   data () {
     return {
@@ -125,10 +131,13 @@ export default {
       respuestaVoF: undefined, // Guarda si la pregunta tiene valor de V o F
       pregunta: undefined, // Guardo la pregunta
       respuestaOM: undefined,
-      dummyAnswerCont: 0,
       dummyAnswers: [],
-      dummyAnswer: undefined
+      dummyAnswer: undefined,
+      variables: []
     }
+  },
+  components: {
+    'CrearVariable': CrearVariable
   },
   props: {
     topicId: {
@@ -137,9 +146,14 @@ export default {
   },
   methods: {
     saveOpenQuestion (pregunta, topicId, tipoPregunta) {
-      let payload = [pregunta, topicId, tipoPregunta]
+      console.log(this.variables)
+      let payload = [pregunta, topicId, tipoPregunta, this.variables]
+      this.variables = []
       this.$store.dispatch('addQuestion', payload)
         .then((response) => {
+          console.log('Refrescar variables')
+          console.log(this.variables)
+          this.reset = true
           this.dialog = false
         })
         .catch((error) => {
@@ -158,8 +172,8 @@ export default {
           console.log(error)
         })
     },
-    saveOMQuestion (pregunta, topicId, tipoPregunta, respuestaOM) {
-      let payload = [pregunta, topicId, tipoPregunta, respuestaOM]
+    saveOMQuestion (pregunta, topicId, tipoPregunta, respuestaOM, dummyAnswers) {
+      let payload = [pregunta, topicId, tipoPregunta, respuestaOM, dummyAnswers]
       this.$store.dispatch('addOMQuestion', payload)
         .then((response) => {
           this.dialog = false
@@ -169,15 +183,18 @@ export default {
           console.log(error)
         })
     },
-    addDummyAnswer () {
-      // this.dummyAnswerCont++
-      // console.log(this.dummyAnswerCont)
+    addDummyAnswer (questionId) {
       this.dummyAnswers.push(this.dummyAnswer)
-      this.dummyAnswer = undefined
+      let payload = [this.dummyAnswer, questionId]
+      console.log(payload)
     },
-    deleteDummyAnswer () {
-      this.dummyAnswerCont--
-      console.log(this.dummyAnswerCont)
+    deleteDummyAnswer (questionId) {
+      this.dummyAnswers.splice(this.dummyAnswer, 1)
+    },
+    guardoArreglo (value) {
+      this.variables = this.variables.concat(value)
+      // console.log('Guardo Arreglo')
+      // console.log(this.variables)
     }
   }
 }
