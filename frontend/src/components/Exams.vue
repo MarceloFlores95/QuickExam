@@ -35,6 +35,8 @@
   <v-card flat>
     <v-select
       :items="Test"
+      item-text="name"
+      item-value="test_id"
       single-line auto
       label="Test"
       v-model="selectedTest"
