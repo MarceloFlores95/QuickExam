@@ -240,7 +240,7 @@ class Test(db.Model):
             self.id,
             "name":
             self.name,
-            "header":
+            "encabezado":
             self.header,
             "count":
             self.count,
