@@ -784,7 +784,6 @@ class DummyAnswerUpdate(Resource):
             'answer': "The dummy answer"
         })
     @token_check
-    #Empty
     def post(self, user_id):
         dummy_answer_data = dummy_answer_parser.parse_args()
         dummy_answer = DummyAnswers.query.filter_by(
