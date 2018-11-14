@@ -1033,6 +1033,7 @@ class TestDelete(Resource):
     @api.doc(security='apikey', params={'test_id': "The id of a test"})
     @token_check
     def post(self, user_id):
+        #Please
         test_data = test_parser.parse_args()
         test = Test.query.filter_by(
             id=test_data['test_id'], user_id=user_id).first()
