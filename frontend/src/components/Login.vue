@@ -23,7 +23,8 @@
         type="password"
       ></v-text-field>
 
-      <v-btn v-on:click="userLogin(user)">Login </v-btn>
+      <v-btn v-on:click="userLogin(user)"
+      >Login </v-btn>
       <v-btn v-on:click="userRegister(user)">Register </v-btn>
     </v-card>
   </div>

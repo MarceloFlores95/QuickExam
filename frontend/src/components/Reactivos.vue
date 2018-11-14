@@ -274,7 +274,8 @@ export default {
   },
   computed: {
     Materias () {
-      return this.$store.getters.subjectList
+      var iMat = this.$store.getters.subjectList
+      return iMat
     },
     Temas () {
       return this.$store.getters.topicList

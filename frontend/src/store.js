@@ -750,6 +750,36 @@ export const store = new Vuex.Store({
             console.log(error)
           })
       })
+    },
+    deletePDF: (context, payload) => {
+      console.log('deletePDF')
+      return new Promise((resolve, reject) => {
+        UserApi.post('/api/delete/test',
+          {test_id: payload}, {
+            headers: {'X-API-KEY': context.getters.userToken
+            }
+          })
+          .then((response) => {
+            console.log('Get test')
+            UserApi.get('api/test', {
+              headers: {'X-API-KEY': context.getters.userToken
+              }
+            })
+              .then((response) => {
+                console.log('Response de changeQuestionList')
+                console.log(response)
+                context.commit('changeTestList', response.data)
+                resolve()
+              }).catch((error) => {
+                console.log('Error')
+                console.log(error)
+              })
+          })
+          .catch((error) => {
+            console.log('Error')
+            console.log(error)
+          })
+      })
     }
   }
 })
