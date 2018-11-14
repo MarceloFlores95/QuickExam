@@ -31,7 +31,7 @@
 </v-container>-->
 
 <!---Test-->
-<v-flex xs12 d-flex>
+<v-flex xs12 d-flex align-content-center>
   <v-card flat>
     <v-select
       :items="Test"
@@ -47,6 +47,12 @@
 <v-flex xs12 d-flex>
   <v-card v-if="selectedTest!==undefined" flat>
     <v-btn @click="convertPDF(selectedTest)">Convertir a PDF</v-btn>
+  </v-card>
+</v-flex>
+
+<v-flex xs12 d-flex>
+  <v-card v-if="selectedTest!==undefined" flat>
+    <v-btn @click="deletePDF(selectedTest)">Borrar examen</v-btn>
   </v-card>
 </v-flex>
 
@@ -222,6 +228,16 @@ export default {
           console.log('Error')
           console.log(error)
         })
+    },
+    deletePDF (selectedTest) {
+      this.$store.dispatch('deletePDF', selectedTest)
+        .then((response) => {
+          //
+        })
+        .catch((error) => {
+          console.log('Error')
+          console.log(error)
+        })
     }
   },
   created () {
@@ -262,4 +278,7 @@ export default {
     }
   }
 }
+/*
+Reflexion sobre el proyecto
+*/
 </script>
