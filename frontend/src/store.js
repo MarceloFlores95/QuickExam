@@ -735,7 +735,7 @@ export const store = new Vuex.Store({
     },
     convertPDF: (context, payload) => {
       return new Promise((resolve, reject) => {
-        UserApi.post('/api/generate_tests', {
+        UserApi.get('/api/generate_tests', {
 
         }, {
           headers: {'X-API-KEY': context.getters.userToken
@@ -745,12 +745,11 @@ export const store = new Vuex.Store({
           }
         })
           .then((response) => {
-            let blob = new Blob([response], { type:"application/pdf"})
-            let link = document.createElement('a')
-            link.href = window.URL.createObjectURL(blob)
-            link.download = 'Examen generado'
+            const link = document.createElement('a')
+            link.href = 'http://localhost:5000/api/generate_tests?test_id='+payload.toString()
+            document.body.appendChild(link)
             link.click()
-            resolve()
+            resolve(response)
           })
           .catch((error) => {
             console.log('Error de commit')

@@ -530,7 +530,23 @@ class TestQuestionsViewAdd(Resource):
 @api.route('/api/generate_tests')
 class TestGenerator(Resource):
     @api.doc(security='apikey', params={'test_id': 'ID of a test'})
-    @token_check
+    def get(self):
+        test = Test.query.filter_by(
+            id=flask.request.args.get('test_id')).first()
+        if test is not None:
+            doc = test.create_pdf()
+            pdf_name = f'{test.name}-{datetime.datetime.now()}'
+            doc.generate_pdf(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.dirname(__file__), '..', 'pdfs', pdf_name)))
+            return flask.send_file(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.dirname(__file__), '..', 'pdfs',
+                        pdf_name + '.pdf')),
+                as_attachment=True)
+    '''@token_check
     def post(self, user_id):
         if 'test_id' not in flask.request.args:
             return {'message': 'Invalid test ID'}, 500
@@ -551,7 +567,7 @@ class TestGenerator(Resource):
                         pdf_name + '.pdf')),
                 as_attachment=True)
         else:
-            return {'message': 'Test does not belong to the user'}, 401
+            return {'message': 'Test does not belong to the user'}, 401'''
 
 
 # updates

@@ -25,9 +25,15 @@ export default new Router({
       component: Login
     },
     {
+      path: '/',
+      name: 'Login',
+      component: Login
+    },
+    {
       path: '/profile',
       name: 'Profile',
       component: Profile
     }
-  ]
+  ],
+  mode: 'history'
 })

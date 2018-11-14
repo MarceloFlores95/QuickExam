@@ -217,7 +217,6 @@ export default {
       console.log(selectedTest)
       this.$store.dispatch('convertPDF', selectedTest)
         .then((response) => {
-          //
         })
         .catch((error) => {
           console.log('Error')
