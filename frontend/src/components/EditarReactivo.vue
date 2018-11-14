@@ -9,9 +9,11 @@
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="text"
-                label="Respuesta"
+                label="pregunta"
             ></v-text-field>
-            </v-flex>
+        </v-flex>
+
+        {{Respuesta}}
 
         <v-card-actions>
             <v-spacer></v-spacer>

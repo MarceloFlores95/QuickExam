@@ -8,13 +8,14 @@
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="tema"
-                label="Nuevo tema"
+                :label=filteredTopic
             ></v-text-field>
             </v-flex>
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="dialog = false">Cancelar</v-btn>
             <v-btn color="green darken-1" flat v-on:click="editTopic(topicId, tema, subjectId)" >Guardar</v-btn>
+            <!--<v-btn color="green darken-1" flat v-on:click="showSubjectList()" >Pedos</v-btn> -->
         </v-card-actions>
         </v-card>
     </v-dialog>
@@ -49,6 +50,20 @@ export default {
           console.log('Error')
           console.log(error)
         })
+    },
+    showSubjectList: function () {
+      console.log(this.$store.getters.subjectList)
+      console.log(this.filteredSubject)
+      console.log(this.subjectId)
+    }
+  },
+  computed: {
+    filteredTopic () {
+      var currentTopic = this.$store.getters.topicList
+      currentTopic = currentTopic.filter((current) => {
+        return current.topic_id === this.topicId
+      })
+      return currentTopic[0].name
     }
   }
 }

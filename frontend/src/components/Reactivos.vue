@@ -114,13 +114,14 @@
 
         <v-flex xs3>
             <v-card flat>
+              <!--Elaboracion de variables-->
             <EditarReactivo
             :questionOpenId="pregunta.question_open_id"
             :questionTFId="pregunta.question_tf_id"
             :questionOMId="pregunta.question_multi_id"
             :topicId="selectedTopic"
             ></EditarReactivo>
-            <!--No Funciona-->
+            <!--Funciona-->
             <v-btn flat icon
             v-on:click="deleteQuestion(pregunta.question_open_id, selectedTopic)"
             v-if="pregunta.question_open_id !== undefined">
@@ -132,7 +133,7 @@
             v-if="pregunta.question_tf_id !== undefined">
                 <v-icon >delete</v-icon>
             </v-btn>
-            <!--No Funciona-->
+            <!--Funciona-->
             <v-btn flat icon
             v-on:click="deleteQuestionOM(pregunta.question_multi_id, selectedTopic)"
             v-if="pregunta.question_multi_id !== undefined">

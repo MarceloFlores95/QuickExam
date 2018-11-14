@@ -8,7 +8,7 @@
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="materia"
-                label="Nueva materia"
+                :label=filteredSubject
             ></v-text-field>
             </v-flex>
         <v-card-actions>
@@ -46,6 +46,20 @@ export default {
           console.log('Error')
           console.log(error)
         })
+    },
+    showSubjectList: function () {
+      console.log(this.$store.getters.subjectList)
+      console.log(this.filteredSubject)
+      console.log(this.subjectId)
+    }
+  },
+  computed: {
+    filteredSubject () {
+      var currentSubject = this.$store.getters.subjectList
+      currentSubject = currentSubject.filter((current) => {
+        return current.subject_id === this.subjectId
+      })
+      return currentSubject[0].name
     }
   }
 }
