@@ -6,7 +6,7 @@ from pylatex import Subsection
 import random
 import re
 from evaluator import QuestionParser, BooleanParser
-from pylatex import Document, Enumerate, Section, NewPage, LineBreak, Command, Package, NoEscape
+from pylatex import Document, Enumerate, Section, NewPage, LineBreak, Command, Package, NoEscape, HugeText, Center, FlushRight, LargeText
 from pylatex.utils import bold
 import functools
 
@@ -257,10 +257,14 @@ class Test(db.Model):
         doc.preamble.append(Package('titling'))
         for i in range(1, self.count + 1):
             random.shuffle(questions)
-            doc.append(Command('title', self.header))
-            doc.append(Command('date', ''))
-            doc.append(NoEscape(r'\maketitle'))
-            doc.append(f'Examen tipo {i}')
+            with doc.create(Center()):
+                doc.append(HugeText(self.header))
+            doc.append(bold('Nombre:'))
+            doc.append(LineBreak())
+            doc.append(bold('ID:'))
+            doc.append(LineBreak())
+            with doc.create(FlushRight()):
+                doc.append(LargeText(f'Examen tipo {i}'))
             enum = Enumerate()
             for question in questions:
                 question.append_to_document(doc, enum)
