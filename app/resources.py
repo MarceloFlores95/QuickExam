@@ -474,6 +474,11 @@ class TestViewAdd(Resource):
             user_id=user_id)
         db.session.add(test)
         db.session.commit()
+        for question in test_data.get('questions', []):
+            test_question = TestQuestions(
+                topic_id=question[0], count=question[1], test_id=test.id)
+            db.session.add(test_question)
+        db.session.commit()
         return test.get_parameters()
 
 
