@@ -116,6 +116,7 @@
             <v-card flat>
               <!--Elaboracion de variables-->
             <EditarReactivo
+            :pregunta="pregunta"
             :questionOpenId="pregunta.question_open_id"
             :questionTFId="pregunta.question_tf_id"
             :questionOMId="pregunta.question_multi_id"
@@ -146,6 +147,7 @@
       </v-flex>
 <!---->
        </v-layout>
+       <br><br><br><br>
   </v-container>
 <!---->
   </v-card>

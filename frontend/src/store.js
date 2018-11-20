@@ -428,7 +428,8 @@ export const store = new Vuex.Store({
       console.log('editOpenQuestion')
       return new Promise((resolve, reject) => {
         UserApi.post('/api/update/question/open', {
-          text: payload[1]
+          text: payload[1],
+          variables: payload[3]
         }, {
           headers: {'X-API-KEY': context.getters.userToken
           },
@@ -556,7 +557,8 @@ export const store = new Vuex.Store({
       return new Promise((resolve, reject) => {
         UserApi.post('/api/update/question/tf', {
           text: payload[1],
-          expression: payload[3]
+          expression: payload[3],
+          variables: payload[4]
         }, {
           headers: {'X-API-KEY': context.getters.userToken
           },
@@ -625,8 +627,8 @@ export const store = new Vuex.Store({
         UserApi.post('/api/update/question/multi', {
           text: payload[1],
           correct_answer: payload[3],
-          variables: payload[4],
-          dummies: payload[5]
+          variables: payload[5],
+          dummies: payload[4]
         }, {
           headers: {'X-API-KEY': context.getters.userToken
           },
