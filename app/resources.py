@@ -546,6 +546,7 @@ class TestGenerator(Resource):
                         os.path.dirname(__file__), '..', 'pdfs',
                         pdf_name + '.pdf')),
                 as_attachment=True)
+
     '''@token_check
     def post(self, user_id):
         if 'test_id' not in flask.request.args:
@@ -787,9 +788,10 @@ class QuestionMultiUpdate(Resource):
             question_multi.text = question_multi_data['text']
             question_multi.correct_answer = question_multi_data[
                 'correct_answer']
-            for dummy_text in dummies_text:
+            for dummy in dummies_text:
                 db.session.add(
-                    DummyAnswers(answer=dummy_text, question_id=question_multi.id))
+                    DummyAnswers(
+                        answer=dummy['answer'], question_id=question_multi.id))
             db.session.commit()
             return question_multi.get_parameters()
         else:
