@@ -4,25 +4,19 @@
     flat
     height="500px"
   >
-<!---Espacio-->
- <v-container grid-list-md text-xs-center>
-   <v-flex v-for="i in 1" :key="`1${i}`" xs1>
-    </v-flex>
-</v-container>
 
 <!---Boton-->
-<v-layout align-center justify-space-around row>
-    <v-flex>
-      <div>
-        <v-btn large router-link to= "/Reactivos">Reactivos</v-btn>
-      </div>
-    </v-flex>
-    <v-flex >
-      <div>
-        <v-btn large color ="blue darken-4" dark>Exámenes</v-btn>
-      </div>
-    </v-flex>
+<v-container grid-list-md text-xs-center>
+<v-layout row wrap>
+    <v-flex xs6>
+            <v-btn large router-link to= "/Reactivos">Reactivos</v-btn>
+        </v-flex>
+
+        <v-flex xs6>
+            <v-btn large dark color ="blue darken-4">Examenes</v-btn>
+        </v-flex>
 </v-layout>
+</v-container>
 
 <!---Espacio
  <v-container grid-list-md text-xs-center>

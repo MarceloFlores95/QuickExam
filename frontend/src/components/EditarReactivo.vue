@@ -9,14 +9,37 @@
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="text"
-                label="pregunta"
+                :label="pregunta.text"
             ></v-text-field>
         </v-flex>
+
+        <div v-for="variable in pregunta.variables"
+        :key="variable.variable_id">
+        <v-flex xs12 sm6>
+            <v-text-field
+                v-model="variable.values"
+                :label="variable.values"
+            ></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6>
+            <v-text-field
+                v-model="variable.symbol"
+                :label="variable.symbol"
+            ></v-text-field>
+        </v-flex>
+        <v-overflow-btn
+              :items="tipos"
+              :label="variable.type"
+              segmented
+              target="#dropdown-example"
+              v-model="variable.type"
+            ></v-overflow-btn>
+        </div>
 
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="dialog = false">Cancelar</v-btn>
-            <v-btn color="green darken-1" flat v-on:click="editOpenQuestion(questionOpenId, text, topicId)" >Guardar</v-btn>
+            <v-btn color="green darken-1" flat v-on:click="editOpenQuestion(questionOpenId, text, topicId, pregunta.variables)" >Guardar</v-btn>
         </v-card-actions>
         </v-card>
 <!-- True or False -->
@@ -25,20 +48,43 @@
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="text"
-                label="Pregunta"
+                :label="pregunta.text"
             ></v-text-field>
         </v-flex>
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="expression"
-                label="Expression"
+                :label="pregunta.expression"
             ></v-text-field>
         </v-flex>
+
+        <div v-for="variable in pregunta.variables"
+        :key="variable.variable_id">
+        <v-flex xs12 sm6>
+            <v-text-field
+                v-model="variable.values"
+                :label="variable.values"
+            ></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6>
+            <v-text-field
+                v-model="variable.symbol"
+                :label="variable.symbol"
+            ></v-text-field>
+        </v-flex>
+        <v-overflow-btn
+              :items="tipos"
+              :label="variable.type"
+              segmented
+              target="#dropdown-example"
+              v-model="variable.type"
+            ></v-overflow-btn>
+        </div>
 
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="dialog = false">Cancelar</v-btn>
-            <v-btn color="green darken-1" flat v-on:click="editTFQuestion(questionTFId, text, topicId, expression)" >Guardar</v-btn>
+            <v-btn color="green darken-1" flat v-on:click="editTFQuestion(questionTFId, text, topicId, expression, pregunta.variables)" >Guardar</v-btn>
         </v-card-actions>
         </v-card>
 <!-- OpcionMultiple -->
@@ -47,24 +93,58 @@
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="text"
-                label="Pregunta"
+                :label="pregunta.text"
+            ></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6>
+          <p>Respuesta Correcta</p>
+            <v-text-field
+                v-model="correct_answer"
+                :label="pregunta.correct_answer"
+            ></v-text-field>
+        </v-flex>
+        <p>Respuesta Incorrecta</p>
+
+        <div v-for="incorrecta in pregunta.dummies"
+        :key="incorrecta.dummy_answer_id">
+          <v-flex xs12 sm6>
+              <v-text-field
+                  v-model="incorrecta.answer"
+                  :label="incorrecta.answer"
+              ></v-text-field>
+          </v-flex>
+        </div>
+        <p>Variable</p>
+        <div v-for="variable in pregunta.variables"
+        :key="variable.variable_id">
+        <v-flex xs12 sm6>
+            <v-text-field
+                v-model="variable.values"
+                :label="variable.values"
             ></v-text-field>
         </v-flex>
         <v-flex xs12 sm6>
             <v-text-field
-                v-model="correctAnswer"
-                label="Respuesta Correcta"
+                v-model="variable.symbol"
+                :label="variable.symbol"
             ></v-text-field>
         </v-flex>
+        <v-overflow-btn
+              :items="tipos"
+              :label="variable.type"
+              segmented
+              target="#dropdown-example"
+              v-model="variable.type"
+            ></v-overflow-btn>
+        </div>
         <CrearVariable @clicked="guardoArreglo"></CrearVariable>
-
+          {{pregunta}}
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="dialog = false">Cancelar</v-btn>
-            <v-btn color="green darken-1" flat v-on:click="editOMQuestion(questionOMId, text, topicId, correctAnswer)" >Guardar</v-btn>
+            <v-btn color="green darken-1" flat v-on:click="editOMQuestion(questionOMId, text, topicId, correct_answer, pregunta.dummies, pregunta.variables)" >Guardar</v-btn>
         </v-card-actions>
         </v-card>
-
     </v-dialog>
 </template>
 
@@ -74,9 +154,13 @@ export default {
   data () {
     return {
       dialog: false,
-      pregunta: undefined,
       respuesta: undefined,
-      variables: []
+      variables: [],
+      tipos: [
+        {id: 'int', text: 'int', callback: () => console.log('Integer')},
+        {id: 'dec', text: 'dec', callback: () => console.log('Decimal')},
+        {id: 'str', text: 'str', callback: () => console.log('String')}
+      ]
     }
   },
   props: {
@@ -91,14 +175,17 @@ export default {
     },
     questionOMId: {
       required: true
+    },
+    pregunta: {
+      required: true
     }
   },
   components: {
     'CrearVariable': CrearVariable
   },
   methods: {
-    editOpenQuestion: function (questionId, text, topicId) {
-      let payload = [questionId, text, topicId]
+    editOpenQuestion: function (questionId, text, topicId, variables) {
+      let payload = [questionId, text, topicId, variables]
       console.log(payload)
       this.$store.dispatch('editOpenQuestion', payload)
         .then((response) => {
@@ -106,12 +193,12 @@ export default {
           this.dialog = false
         })
         .catch((error) => {
-          console.log('Error')
+          console.log('Error editOpenQuestion')
           console.log(error)
         })
     },
-    editTFQuestion: function (questionId, text, topicId, expression) {
-      let payload = [questionId, text, topicId, expression]
+    editTFQuestion: function (questionId, text, topicId, expression, variables) {
+      let payload = [questionId, text, topicId, expression, variables]
       console.log(payload)
       this.$store.dispatch('editTFQuestion', payload)
         .then((response) => {
@@ -123,8 +210,8 @@ export default {
           console.log(error)
         })
     },
-    editOMQuestion: function (questionId, text, topicId, correctAnswer) {
-      let payload = [questionId, text, topicId, correctAnswer, this.variables]
+    editOMQuestion: function (questionId, text, topicId, correct, dummies, variables) {
+      let payload = [questionId, text, topicId, correct, dummies, variables]
       console.log(payload)
       this.$store.dispatch('editOMQuestion', payload)
         .then((response) => {
