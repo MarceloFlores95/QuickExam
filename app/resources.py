@@ -789,7 +789,7 @@ class QuestionMultiUpdate(Resource):
                 'correct_answer']
             for dummy_text in dummies_text:
                 db.session.add(
-                    DummyAnswers(answer=dummy, question_id=question_multi.id))
+                    DummyAnswers(answer=dummy_text, question_id=question_multi.id))
             db.session.commit()
             return question_multi.get_parameters()
         else:
