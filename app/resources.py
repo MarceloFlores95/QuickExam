@@ -831,7 +831,7 @@ class TestUpdate(Resource):
         params={
             'test_id': "The id of test to update",
             'name': "The name of the test",
-            'header': "The header for the test",
+            'encabezado': "The header for the test",
             'count':
             "The amount of the test types to be generated for the test"
         })
@@ -842,7 +842,7 @@ class TestUpdate(Resource):
             id=test_data['test_id'], user_id=user_id).first()
         if test is not None:
             test.name = test_data['name']
-            test.header = test_data['header']
+            test.header = test_data['encabezado']
             test.count = test_data['count']
             db.session.commit()
             return test.get_parameters()
@@ -850,7 +850,7 @@ class TestUpdate(Resource):
             return {'message': 'Test does not belong to the user'}, 401
 
 
-@api.route('/api/update/test/questions')
+@api.route('/apin/update/test/questions')
 class TestQuestionsUpdate(Resource):
     @api.doc(
         security='apikey',

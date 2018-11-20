@@ -47,6 +47,7 @@ test_parser = reqparse.RequestParser()
 test_parser.add_argument('test_id', type=int)
 test_parser.add_argument('name', type=str)
 test_parser.add_argument('header', type=str)
+test_parser.add_argument('encabezado', type=str)
 test_parser.add_argument('count', type=int)
 test_parser.add_argument('questions', type=list, location='json')
 
