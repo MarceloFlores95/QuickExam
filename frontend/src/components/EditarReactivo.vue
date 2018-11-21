@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="300">
+    <v-dialog v-model="dialog" persistent max-width="600px">
         <v-btn flat icon slot="activator">
             <v-icon>edit</v-icon>
         </v-btn>
@@ -35,7 +35,7 @@
               v-model="variable.type"
             ></v-overflow-btn>
         </div>
-
+        <CrearVariable @clicked="guardoArreglo"></CrearVariable>
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="dialog = false">Cancelar</v-btn>
@@ -44,7 +44,7 @@
         </v-card>
 <!-- True or False -->
         <v-card v-if="questionTFId !== undefined">
-        <v-card-title class="headline">Edita la pregunta ToF{{questionOpenId}} {{questionTFId}}</v-card-title>
+        <v-card-title class="headline">Edita la pregunta ToF</v-card-title>
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="text"
@@ -80,7 +80,7 @@
               v-model="variable.type"
             ></v-overflow-btn>
         </div>
-
+        <CrearVariable @clicked="guardoArreglo"></CrearVariable>
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="dialog = false">Cancelar</v-btn>
@@ -89,7 +89,7 @@
         </v-card>
 <!-- OpcionMultiple -->
         <v-card v-if="questionOMId !== undefined">
-        <v-card-title class="headline">Edita la pregunta Multiple{{questionOMId}} {{questionTFId}}</v-card-title>
+        <v-card-title class="headline">Edita la pregunta Multiple</v-card-title>
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="text"
@@ -138,7 +138,6 @@
             ></v-overflow-btn>
         </div>
         <CrearVariable @clicked="guardoArreglo"></CrearVariable>
-          {{pregunta}}
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="dialog = false">Cancelar</v-btn>

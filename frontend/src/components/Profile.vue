@@ -18,23 +18,36 @@
 </v-layout>
 </v-container>
 
-<p>Nombre de usuario</p>
-        <v-flex xs12 sm6>
-            <v-text-field
-                v-model="user"
-                :label="user"
-                readonly
-            ></v-text-field>
-        </v-flex>
-        <p>Contraseña</p>
-        <v-flex xs12 sm6>
+<v-container>
+  <v-layout align-center justify-center row fill-height/>
+          <v-flex xs12 sm6>
+              <v-text-field
+                  v-model="user"
+                  label="User"
+                  :value="user"
+                  :readonly=editVar
+              ></v-text-field>
+          </v-flex>
+          <v-flex xs12 sm6>
 
-            <v-text-field
-                v-model="password"
-                :label="password"
-                readonly
-            ></v-text-field>
-        </v-flex>
+              <v-text-field
+                  v-model="password"
+                  label="Password"
+                  :value="password"
+                  :readonly=editVar
+              ></v-text-field>
+          </v-flex>
+          <v-btn flat icon slot="activator"
+          v-on:click="edit"
+          v-if="editVar == true">
+            <v-icon>edit</v-icon>
+        </v-btn>
+        <v-btn flat icon slot="activator"
+        v-on:click="edit"
+        v-if="editVar == false">
+            <v-icon>save</v-icon>
+        </v-btn>
+</v-container>
 </v-card>
 </template>
 
@@ -43,9 +56,24 @@ export default {
   data: () => ({
     userToken: undefined,
     user: undefined,
-    password: undefined
+    password: undefined,
+    editVar: true
   }),
   methods: {
+    edit: function () {
+      this.editVar = !this.editVar
+      if (this.editVar === true) {
+        this.changeData()
+      }
+      console.log(this.editVar)
+    },
+    changeData: function () {
+      let payload = [this.user, this.password]
+      this.$store.dispatch('changeData', payload)
+        .then((response) => {
+          this.$router.push({name: 'Reactivos', params: { }})
+        })
+    }
   },
   created () {
     this.userToken = this.$store.getters.userToken
@@ -61,14 +89,6 @@ export default {
     },
     Temas () {
       return this.$store.getters.topicList
-    }
-  },
-  watch: {
-    selectedSubject: function (selectedSubject) {
-      this.refreshTopicList()
-    },
-    selectedTopic: function (selectedTopic) {
-      this.refreshQuestionList()
     }
   }
 }

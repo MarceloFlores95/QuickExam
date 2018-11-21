@@ -40,6 +40,15 @@
 
 <v-flex xs12 d-flex>
   <v-card v-if="selectedTest!==undefined" flat>
+    <EditarExamen
+    :exam="Test"
+    :selectedExam="selectedTest"
+    ></EditarExamen>
+  </v-card>
+</v-flex>
+
+<v-flex xs12 d-flex>
+  <v-card v-if="selectedTest!==undefined" flat>
     <v-btn @click="convertPDF(selectedTest)">Convertir a PDF</v-btn>
   </v-card>
 </v-flex>
@@ -163,6 +172,7 @@
 </template>
 
 <script>
+import EditarExamen from './EditarExamen'
 export default {
   data: () => ({
     userToken: undefined,
@@ -272,6 +282,9 @@ export default {
     selectedTopic: function (selectedTopic) {
       this.refreshQuestionList()
     }
+  },
+  components: {
+    'EditarExamen': EditarExamen
   }
 }
 /*
