@@ -102,6 +102,10 @@ export const store = new Vuex.Store({
     },
     changeTestList (state, payload) {
       Vue.set(state, 'testList', payload)
+    },
+    changeUserData (state, payload) {
+      state.user.username = payload.user
+      state.user.password = payload.password
     }
   },
   actions: {
@@ -741,14 +745,14 @@ export const store = new Vuex.Store({
 
         }, {
           headers: {'X-API-KEY': context.getters.userToken
-                   },
+          },
           params: {
             'test_id': payload
           }
         })
           .then((response) => {
             const link = document.createElement('a')
-            link.href = userServiceURL+'/api/generate_tests?test_id='+payload.toString()
+            link.href = userServiceURL + '/api/generate_tests?test_id=' + payload.toString()
             document.body.appendChild(link)
             link.click()
             resolve(response)
@@ -785,6 +789,35 @@ export const store = new Vuex.Store({
           })
           .catch((error) => {
             console.log('Error')
+            console.log(error)
+          })
+      })
+    },
+    changeData: (context, payload) => {
+      return new Promise((resolve, reject) => {
+        UserApi.post('/api/update/user', {
+          username: payload[0],
+          password: payload[1]
+        }, {
+          headers: { 'X-API-KEY': context.getters.userToken
+          }
+        })
+          .then((response) => {
+            UserApi.get('/api/user',
+              {
+                headers: {'X-API-KEY': context.getters.userToken
+                }
+              })
+              .then((response) => {
+                context.commit('changeUserData', response.data)
+              })
+              .catch((error) => {
+                console.log('Error de getChangeData')
+                console.log(error)
+              })
+          })
+          .catch((error) => {
+            console.log('Error de changeData')
             console.log(error)
           })
       })

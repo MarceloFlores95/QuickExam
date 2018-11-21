@@ -1,5 +1,5 @@
 <template>
-            <v-dialog v-model="dialog" persistent max-width="800px">
+            <v-dialog v-model="dialog" persistent max-width="600px">
         <v-btn slot="activator" color="black" dark flat icon>
             <v-icon>add_box</v-icon>
         </v-btn>
@@ -86,7 +86,6 @@
                     v-model="respuestaVoF"></v-text-field>
                 </v-flex>
               <CrearVariable @clicked="guardoArreglo"></CrearVariable>
-            <small>*indicates required field</small>
             </v-card-text>
  </v-card>
 

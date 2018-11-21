@@ -1,10 +1,11 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="300">
+    <v-dialog v-model="dialog" persistent max-width="600px">
         <v-btn flat icon slot="activator">
             <v-icon>edit</v-icon>
         </v-btn>
         <v-card>
-        <v-card-title class="headline">Edita el tema {{topicId}}</v-card-title>
+        <div v-if="topicId === undefined">{{topicId}}</div>
+        <v-card-title class="headline">Edita el tema </v-card-title>
         <v-flex xs12 sm6>
             <v-text-field
                 v-model="tema"
