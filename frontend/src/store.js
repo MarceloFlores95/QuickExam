@@ -821,6 +821,40 @@ export const store = new Vuex.Store({
             console.log(error)
           })
       })
+    },
+    editExam: (context, payload) => {
+      return new Promise((resolve, reject) => {
+        UserApi.post('/api/update/test', {
+          name: payload[0],
+          encabezado: payload[1],
+          count: payload[3]
+        }, {
+          headers: { 'X-API-KEY': context.getters.userToken
+          },
+          params: {
+            'test_id': payload[2]
+          }
+        })
+          .then((response) => {
+            UserApi.get('/api/test',
+              {
+                headers: {'X-API-KEY': context.getters.userToken
+                }
+              })
+              .then((response) => {
+                context.commit('changeTestList', response.data)
+                resolve()
+              })
+              .catch((error) => {
+                console.log('Error de getTEst')
+                console.log(error)
+              })
+          })
+          .catch((error) => {
+            console.log('Error de editExam')
+            console.log(error)
+          })
+      })
     }
   }
 })
