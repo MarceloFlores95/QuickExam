@@ -850,7 +850,7 @@ class TestUpdate(Resource):
             return {'message': 'Test does not belong to the user'}, 401
 
 
-@api.route('/apin/update/test/questions')
+@api.route('/api/update/test/questions')
 class TestQuestionsUpdate(Resource):
     @api.doc(
         security='apikey',
